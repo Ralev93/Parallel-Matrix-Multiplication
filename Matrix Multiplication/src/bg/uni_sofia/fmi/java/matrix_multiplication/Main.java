@@ -4,12 +4,14 @@ import bg.uni_sofia.fmi.java.matrix_multiplication.exceptions.MatrixMultiplicati
 import bg.uni_sofia.fmi.java.matrix_multiplication.linear.MatrixMultiplierLinear;
 import bg.uni_sofia.fmi.java.matrix_multiplication.matrix.Matrix;
 import bg.uni_sofia.fmi.java.matrix_multiplication.parallel.MatrixMultiplierParallel;
+
+import java.io.File;
 import java.io.IOException;
 
 public class Main {
 
-    private final static int ATTEMPTS = 5;
-    private static final int k = Runtime.getRuntime().availableProcessors();
+    private final static int ATTEMPTS = 1;
+    private static final int k = 1;//Runtime.getRuntime().availableProcessors();
     private final static int totalIterations = ATTEMPTS + (2 * k) * ATTEMPTS;
     private final static String ERROR_MSG = "The columns of the first matrix must"
             + " be equal of the rows of the second!\nTerminating.";
@@ -20,10 +22,10 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Matrix left = new Matrix();
-        left.readFromFile("Ex2\\left");
+        left.readFromFile(new File( "TestData\\Ex2\\left"));
 
         Matrix right = new Matrix();
-        right.readFromFile("Ex2\\right");
+        right.readFromFile(new File("TestData\\Ex2\\right"));
 
         Matrix result = null;
 
@@ -41,7 +43,7 @@ public class Main {
         showTable(a, avrglinearTime);
 
         Matrix expectedResult = new Matrix();
-        expectedResult.readFromFile("Ex2\\result");
+        expectedResult.readFromFile(new File("TestData\\Ex2\\result"));
 
         if (!expectedResult.equals(result)) {
             throw new RuntimeException();
@@ -64,7 +66,7 @@ public class Main {
                 for (int j = 0; j < ATTEMPTS; j++) {
                     parallel.setParallelismLevel(i);
                     result = parallel.multiply(left, right);
-                    showProgress(++done);
+                    //showProgress(++done);
                 }
                 long endParallel = System.currentTimeMillis();
                 float avrgParallelTime = (endParallel - startParallel) / ATTEMPTS;
@@ -80,7 +82,7 @@ public class Main {
         try {
             for (int i = 0; i < ATTEMPTS; i++) {
                 result = linear.multiply(left, right);
-                showProgress(i);
+                //showProgress(i);
             }
             
         } catch (MatrixMultiplicationImpossible ex) {
