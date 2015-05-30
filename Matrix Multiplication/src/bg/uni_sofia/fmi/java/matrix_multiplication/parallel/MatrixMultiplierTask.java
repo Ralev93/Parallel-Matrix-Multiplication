@@ -8,10 +8,7 @@ package bg.uni_sofia.fmi.java.matrix_multiplication.parallel;
 import bg.uni_sofia.fmi.java.matrix_multiplication.matrix.Matrix;
 import java.util.concurrent.RecursiveTask;
 
-/**
- *
- * @author a
- */
+
 public class MatrixMultiplierTask extends RecursiveTask<Matrix> {
 
 /**

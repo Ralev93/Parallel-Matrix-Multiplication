@@ -25,8 +25,7 @@ public class Matrix {
     private int rows; // m
     private int columns; // n
     private double[][] matrix;
-
-    private final String DEFAULT_DIR = "C:\\Users\\a\\Desktop\\TestData\\";
+    
     private File file;
 
     public Matrix() {
@@ -64,7 +63,7 @@ public class Matrix {
 
     public void multiplyFromTo(Matrix left, Matrix right, int begin, int end) {
         int i, j;
-
+        
         for (int k = begin; k < end; k++) {
             for (i = 0; i < left.getColumns(); i++) {
                 for (j = 0; j < right.getColumns(); j++) {
@@ -74,8 +73,8 @@ public class Matrix {
         }
     }
 
-    public void readFromFile(String path) throws FileNotFoundException, IOException {
-        file = new File(DEFAULT_DIR + path);
+    public void readFromFile(File file) throws FileNotFoundException, IOException {
+//        file = new File(DEFAULT_DIR + path);
         try (DataInputStream in = new DataInputStream(new BufferedInputStream(
                 new FileInputStream(file)))) {
 
@@ -90,9 +89,10 @@ public class Matrix {
             }
         }
     }
+    
 
     public void writeToFile(String path) throws FileNotFoundException, IOException {
-        file = new File(DEFAULT_DIR + path);
+        file = new File("." + path);
         try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(
                 new FileOutputStream(file)))) {
 
