@@ -1,33 +1,48 @@
 package bg.uni_sofia.fmi.java.matrix_multiplication.GUI;
 
 import java.awt.EventQueue;
+import java.awt.Image;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JFileChooser;
 
 import bg.uni_sofia.fmi.java.matrix_multiplication.CalculationTask;
+
 import javax.swing.JProgressBar;
 
 public class MainWindow {
 
 	private JFrame frame;
-	private final File DEFAULT_DIR = new File( ".\\TestData\\ex1");
+	private JButton btnCalculate;
+	private JProgressBar progressBar;
+	private final File DEFAULT_DIR = new File(".\\TestData\\ex1");
 	private CalculationTask calcTask = new CalculationTask();
-	
+	private JButton btnNewButton;
+
 	private File getMatrixFile() {
 		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(DEFAULT_DIR);				
-		
+		chooser.setCurrentDirectory(DEFAULT_DIR);
+
 		int returnVal = chooser.showOpenDialog(null);
-	    if(returnVal == JFileChooser.APPROVE_OPTION) {
-	    	return chooser.getSelectedFile();
-	    }
-	    else return null; // TODO: throw exception!
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			return chooser.getSelectedFile();
+		} else
+			return null; // TODO: throw exception!
+	}
+
+	public JButton getBtnCalculate() {
+		return btnCalculate;
 	}
 
 	/**
@@ -58,11 +73,11 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 406, 362);
+		frame.setBounds(100, 100, 406, 261);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		
-		
+		calcTask.setFrame(frame);
+
 		JButton btnLoadFrstMatrix = new JButton("Load matrix 1");
 		btnLoadFrstMatrix.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -71,42 +86,63 @@ public class MainWindow {
 		});
 		btnLoadFrstMatrix.setBounds(10, 28, 158, 23);
 		frame.getContentPane().add(btnLoadFrstMatrix);
-		
-		
+
 		JButton btnLoadSndMatrix = new JButton("Load matrix 2");
 		btnLoadSndMatrix.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				calcTask.setRightFile(getMatrixFile());
 			}
 		});
-		btnLoadSndMatrix.setBounds(206, 28, 158, 23);
+		btnLoadSndMatrix.setBounds(222, 28, 158, 23);
 		frame.getContentPane().add(btnLoadSndMatrix);
-		
-		
-		JButton btnCalculate = new JButton("Calculate");
+
+		btnCalculate = new JButton("Calculate");
 		btnCalculate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				calcTask.addPropertyChangeListener(new PropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent evt) {
+						if ("progress" == evt.getPropertyName()) {
+							int progress = (Integer) evt.getNewValue();
+							progressBar.setValue(progress);
+						}
+					}
+				});
+
 				calcTask.execute();
 			}
 		});
-		btnCalculate.setBounds(99, 119, 173, 90);
+		btnCalculate.setBounds(98, 62, 173, 90);
 		frame.getContentPane().add(btnCalculate);
-		
-		
+
 		JButton btnLoadExpectedResult = new JButton("TMP");
 		btnLoadExpectedResult.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				calcTask.setExpectedResultFile(getMatrixFile());
 			}
 		});
-		btnLoadExpectedResult.setBounds(138, 72, 89, 23);
+		btnLoadExpectedResult.setBounds(186, 28, 26, 23);
 		frame.getContentPane().add(btnLoadExpectedResult);
-		
-		
-		JProgressBar progressBar = new JProgressBar(0, CalculationTask.totalIterations);
+
+		progressBar = new JProgressBar(0, 100);
 		progressBar.setValue(0);
 		progressBar.setStringPainted(true);
-		progressBar.setBounds(10, 247, 354, 44);
+		progressBar.setBounds(10, 163, 370, 44);
 		frame.getContentPane().add(progressBar);
+
+		btnNewButton = new JButton("");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				About ab = new About();
+				ab.setVisible(true);
+			}
+		});
+		btnNewButton.setBounds(314, 90, 50, 35);
+		try {
+			Image img = ImageIO.read(new File(".\\resources\\Help.png")).getScaledInstance( 50, 35,  java.awt.Image.SCALE_SMOOTH ) ; ;
+			btnNewButton.setIcon(new ImageIcon(img));
+		} catch (IOException ex) {
+		}
+		frame.getContentPane().add(btnNewButton);
+
 	}
 }
