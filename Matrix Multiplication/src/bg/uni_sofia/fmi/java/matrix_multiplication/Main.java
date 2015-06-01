@@ -10,8 +10,8 @@ import java.io.IOException;
 
 public class Main {
 
-    private final static int ATTEMPTS = 1;
-    private static final int k = 1;//Runtime.getRuntime().availableProcessors();
+    private final static int ATTEMPTS = 3;
+    private static final int k = Runtime.getRuntime().availableProcessors();
     private final static int totalIterations = ATTEMPTS + (2 * k) * ATTEMPTS;
     private final static String ERROR_MSG = "The columns of the first matrix must"
             + " be equal of the rows of the second!\nTerminating.";
@@ -66,7 +66,7 @@ public class Main {
                 for (int j = 0; j < ATTEMPTS; j++) {
                     parallel.setParallelismLevel(i);
                     result = parallel.multiply(left, right);
-                    //showProgress(++done);
+                    showProgress(++done);
                 }
                 long endParallel = System.currentTimeMillis();
                 float avrgParallelTime = (endParallel - startParallel) / ATTEMPTS;
