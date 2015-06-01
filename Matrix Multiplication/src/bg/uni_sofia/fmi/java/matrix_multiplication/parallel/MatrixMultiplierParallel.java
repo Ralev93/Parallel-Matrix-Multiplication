@@ -9,14 +9,54 @@ import bg.uni_sofia.fmi.java.matrix_multiplication.MatrixMultiplier;
 import bg.uni_sofia.fmi.java.matrix_multiplication.exceptions.MatrixMultiplicationImpossible;
 import bg.uni_sofia.fmi.java.matrix_multiplication.matrix.Matrix;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.TimeUnit;
 
 /**
- * 
+ *
  * @author a
  */
-public class MatrixMultiplierParallel implements MatrixMultiplier {
 
+
+
+public class MatrixMultiplierParallel implements MatrixMultiplier {
+	
+	public class ComputeThread implements Runnable {
+
+		private int data;
+		private int k;
+		private Matrix left, right, result;
+
+		public ComputeThread(int l, Matrix left,Matrix right, Matrix result) {
+			this.result = result;
+			data = l;
+			k = data;
+			this.left = left;
+			this.right = right;
+		}
+
+		@Override
+		public void run() {
+			double accumulate;
+
+			for (int i = 0; i < left.getColumns(); i++) {
+
+				for (int j = 0; j < right.getColumns(); j++) {
+					accumulate = result.getElementAt(k, j)
+							+ left.getElementAt(k, i)
+							* right.getElementAt(i, j);
+
+					result.setElementAt(k, j, accumulate);
+				}
+			}
+
+			accumulate = 10;
+
+		}}
+	
 	int parallelismLevel = 1;
 
 	public void setParallelismLevel(int parallelismLevel) {
@@ -27,59 +67,42 @@ public class MatrixMultiplierParallel implements MatrixMultiplier {
 	public Matrix multiply(final Matrix left, final Matrix right)
 			throws MatrixMultiplicationImpossible {
 
-		// ForkJoinPool pool = new ForkJoinPool(parallelismLevel);
+		//ForkJoinPool pool = new ForkJoinPool(parallelismLevel);
 
+		ExecutorService executor = Executors.newFixedThreadPool(parallelismLevel);
+		
 		if (left.getColumns() != right.getRows()) {
 			throw new MatrixMultiplicationImpossible();
 		}
 
 		Matrix result = new Matrix(left.getRows(), right.getColumns());
 
-		class ComputeThread extends Thread {
+		
 
-			private int data;
-			private int k;
-			Matrix result;
+		 //ComputeThread threads[] = new ComputeThread[left.getRows()];
+		 for (int k = 0; k < left.getRows(); k++) {
+		executor.execute(new ComputeThread(k, left, right, result));
+		
+		 }
+//		
+//		 for (int k = 0; k < left.getRows(); k++)
+//		 try {
+//		 threads[k].join();
+//		 } catch (InterruptedException e) {
+//		 // TODO Auto-generated catch block
+//		 e.printStackTrace();
+//		 }
 
-			public ComputeThread(int l, Matrix result) {
-				this.result = result;
-				data = l;
-				k = data;
-			}
+//		try {
+//			for (int k = 0; k < left.getRows(); k++) {
+//				pool.invoke(new RowMultiplicationTask(k, left, right, result));
+//			}
+//
+//			return result;
+//		} finally {
+//			pool.shutdown();
+//		}
 
-			public void run() {
-				double accumulate;
-
-				for (int i = 0; i < left.getColumns(); i++) {
-
-					for (int j = 0; j < right.getColumns(); j++) {
-						accumulate = result.getElementAt(k, j)
-								+ left.getElementAt(k, i)
-								* right.getElementAt(i, j);
-
-						result.setElementAt(k, j, accumulate);
-					}
-				}
-
-				accumulate = 10;
-			}
-		}
-
-		ComputeThread threads[] = new ComputeThread[left.getRows()];
-		for (int k = 0; k < left.getRows(); k++) {
-
-			threads[k] = new ComputeThread(k, result);
-			threads[k].start();
-
-		}
-
-		for (int k = 0; k < left.getRows(); k++)
-			try {
-				threads[k].join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		// System.out.println(result.toString());
 		//
 		// try {
@@ -92,6 +115,14 @@ public class MatrixMultiplierParallel implements MatrixMultiplier {
 		// } finally {
 		// pool.shutdown();
 		// }
+		 
+		 executor.shutdown();
+		 try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return result;
 	}
 
