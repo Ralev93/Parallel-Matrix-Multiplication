@@ -11,6 +11,10 @@ import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
+import java.awt.Font;
+import java.awt.Color;
+import javax.swing.UIManager;
 
 public class About extends JFrame {
 
@@ -37,14 +41,17 @@ public class About extends JFrame {
 	 */
 	public About() {
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 385, 167);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblAla = new JLabel("Some text\r\n");
-		lblAla.setBounds(10, 54, 414, 128);
-		contentPane.add(lblAla);
+		JTextArea txtrThisApplicationComes = new JTextArea();
+		txtrThisApplicationComes.setBackground(UIManager.getColor("Button.background"));
+		txtrThisApplicationComes.setFont(new Font("Monospaced", Font.PLAIN, 15));
+		txtrThisApplicationComes.setText("This application comes to you with \r\nthe collaboration of\r\nHristo Ralev & Nedko Savov.");
+		txtrThisApplicationComes.setBounds(10, 24, 354, 80);
+		contentPane.add(txtrThisApplicationComes);
 	}
 }

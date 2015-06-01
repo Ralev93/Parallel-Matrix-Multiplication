@@ -12,27 +12,39 @@ import javax.swing.SwingWorker;
 import bg.uni_sofia.fmi.java.matrix_multiplication.exceptions.IncorrectMatrixMultiplication;
 import bg.uni_sofia.fmi.java.matrix_multiplication.exceptions.MatrixMultiplicationImpossible;
 import bg.uni_sofia.fmi.java.matrix_multiplication.linear.MatrixMultiplierLinear;
+import bg.uni_sofia.fmi.java.matrix_multiplication.log.Logger;
 import bg.uni_sofia.fmi.java.matrix_multiplication.matrix.Matrix;
 import bg.uni_sofia.fmi.java.matrix_multiplication.parallel.MatrixMultiplierParallel;
 
 public class CalculationTask extends SwingWorker<Void, Void> {
-	private int ATTEMPTS = 3;
-	private static final int k = Runtime.getRuntime().availableProcessors();
-	private int totalIterations = this.getAttempts() + (2 * k) * this.getAttempts();
-
+	private int attempts;
+	private int threads;
+	private int totalIterations;
 	private float avrglinearTime = 0;
-	private float[] coresTimes = new float[2 * k];
+	private float[] coresTimes;
 	private int progress = 0;
 
 	private File leftFile; // file, containing the left matrix;
 	private File rightFile; // file, containing the right matrix;
 	private File expectedResultFile; // file, containing the expected result
 	private JFrame mainFrame; // the graphical interface
+	private Logger logger = new Logger(false);
 
-	private final static String MULTIPLICATION_ERROR_MSG = "The columns of the first matrix must"
+	/* message, shown when the calculation is incorrect*/
+	private final static String MULTIPLICATION_INC_ERROR_MSG = "Wrong matrix multiplication!"; 
+	/*Message, shown when multiplication is impossible*/
+	private final static String MULTIPLICATION_IMP_ERROR_MSG = "The columns of the first matrix must"
 			+ " be equal of the rows of the second!\nTerminating.";
 
 	private final static String FILE_ERROR_MSG = "No file selected!\nTerminating.";
+
+	public CalculationTask(int threads, int attempts) {
+		this.threads = threads;
+		this.attempts = attempts;
+		this.coresTimes = new float[2 * threads];
+		this.totalIterations = this.attempts + (2 * this.threads)
+				* this.attempts;
+	}
 
 	public void setRightFile(File rightFile) {
 		this.rightFile = rightFile;
@@ -45,39 +57,40 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	public void setExpectedResultFile(File expectedResultFile) {
 		this.expectedResultFile = expectedResultFile;
 	}
-	
+
 	public void setFrame(JFrame frame) {
 		mainFrame = frame;
-		
+	}
+
+	public void setQuiet(boolean quiet) {
+		this.logger.setQuiet(quiet);
 	}
 
 	public int getTotalIterations() {
 		return totalIterations;
 	}
-	
+
 	public int getAttempts() {
-		return ATTEMPTS;
+		return attempts;
 	}
-//	private int calcProgress(int progress) {
-////		return (int) ((float) progress / totalIterations * 100);
-//		return progress;
-//	}
 
 	private void showTable() {
-		System.out.printf("\n\n%-10s %-10s\n", "Cores", "Acceleration");
-		for (int i = 1; i <= 2 * k; i++) {
-			System.out.printf("#%-10d%-10.4f\n", i, coresTimes[i - 1]);
+		logger.log(String.format("\n\n%-10s %-10s %-10s\n", "Cores",
+				"Acceleration", "ms"));
+		for (int i = 1; i <= 2 * threads; i++) {
+			logger.log(String.format("#%-10d%-10.4f %.1fms\n", i,
+					coresTimes[i - 1], avrglinearTime / coresTimes[i - 1]));
 		}
-		System.out.println("Average linear time: " + avrglinearTime + "ms");
+		logger.logln("Average linear time: " + avrglinearTime + "ms");
 	}
 
 	private Matrix invokeLinearMultiply(Matrix left, Matrix right,
 			MatrixMultiplier linear) {
 		Matrix result = new Matrix();
-		System.out.println("Linear multiplying started");
+		logger.logln("Linear multiplying started");
 		try {
 			long linearTime = 0;
-			for (int i = 0; i < ATTEMPTS; i++) {
+			for (int i = 0; i < attempts && !this.isCancelled(); i++) {
 
 				long startLinear = System.currentTimeMillis();
 				result = linear.multiply(left, right);
@@ -88,11 +101,10 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 				progress = i + 1;
 				setProgress(progress);
 			}
-			avrglinearTime = linearTime / ATTEMPTS;
-		System.out.println("Linear multiplying finished for: " + avrglinearTime);
+			avrglinearTime = linearTime / (float) attempts;
+			logger.logln("Linear multiplying finished for: " + avrglinearTime);
 		} catch (MatrixMultiplicationImpossible ex) {
-			JOptionPane.showMessageDialog(null, MULTIPLICATION_ERROR_MSG,
-					"Error", JOptionPane.ERROR_MESSAGE);
+			logger.log(MULTIPLICATION_IMP_ERROR_MSG, true);
 			System.exit(1);
 		}
 		return result;
@@ -102,12 +114,12 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 			MatrixMultiplierParallel parallel) {
 
 		Matrix result = new Matrix();
-		
-		System.out.println("Parallel multiplying started");
+
+		logger.logln("Parallel multiplying started");
 		try {
-			for (int i = 1; i <= 2 * k; i++) {
+			for (int i = 1; i <= 2 * threads && !this.isCancelled(); i++) {
 				long parallelTime = 0;
-				for (int j = 0; j < ATTEMPTS; j++) {
+				for (int j = 0; j < attempts && !this.isCancelled(); j++) {
 					parallel.setParallelismLevel(i); // # threads
 
 					long startParallel = System.currentTimeMillis();
@@ -117,13 +129,13 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 
 					setProgress(++progress);
 				}
-				float avrgParallelTime = parallelTime / ATTEMPTS;
+				float avrgParallelTime = parallelTime / attempts;
 				coresTimes[i - 1] = avrglinearTime / avrgParallelTime;
 			}
-			System.out.println("Parallel multiplying finished.");
+			logger.logln("Parallel multiplying finished.");
+
 		} catch (MatrixMultiplicationImpossible ex) {
-			JOptionPane.showMessageDialog(null, MULTIPLICATION_ERROR_MSG,
-					"Error", JOptionPane.ERROR_MESSAGE);
+			logger.log(MULTIPLICATION_IMP_ERROR_MSG, true);
 			System.exit(1);
 		}
 		return result;
@@ -133,35 +145,30 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	protected Void doInBackground() throws Exception {
 
 		if (leftFile == null || rightFile == null || expectedResultFile == null) {
-			JOptionPane.showMessageDialog(null, FILE_ERROR_MSG, "Error",
-					JOptionPane.ERROR_MESSAGE);
-			mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING));
+			logger.log(FILE_ERROR_MSG, true);
+			/*close the window*/ //TODO: Nullpointer exception if no gui!!!
+			mainFrame.dispatchEvent(new WindowEvent(mainFrame,
+					WindowEvent.WINDOW_CLOSING));
 			throw new FileNotFoundException();
 		}
 
-		Matrix left = new Matrix();
-		left.readFromFile(leftFile);
-
-		Matrix right = new Matrix();
-		right.readFromFile(rightFile);
-
-		Matrix expectedResult = new Matrix();
-		expectedResult.readFromFile(expectedResultFile);
-
+		Matrix left = new Matrix(leftFile); //TODO: or new Matrix(n,m).generateRandom()
+		Matrix right = new Matrix(rightFile); //TODO: or new Matrix(n,m).generateRandom()
+		Matrix expectedResult = new Matrix(expectedResultFile); //TODO: delete this line;
 		Matrix result = null;
 
-		MatrixMultiplier linear = new MatrixMultiplierLinear();
-		MatrixMultiplierParallel parallel = new MatrixMultiplierParallel();
+		setProgress(0);
+		invokeLinearMultiply(left, right, new MatrixMultiplierLinear());
+		result = invokeParallelMultiply(left, right,
+				new MatrixMultiplierParallel());
 
-		setProgress(progress);
-
-		result = invokeLinearMultiply(left, right, linear);
-		result = invokeParallelMultiply(left, right, parallel);
+		if (this.isCancelled()) {
+			logger.logln("Calcuation aborted!");
+			setProgress(0);
+		}
 
 		if (!expectedResult.equals(result)) {
-			JOptionPane.showMessageDialog(null,
-					"Incorrect matrix multiplication!", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			logger.log(MULTIPLICATION_INC_ERROR_MSG);
 			throw new IncorrectMatrixMultiplication();
 		}
 		return null;
@@ -174,13 +181,4 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		// btnCalculate.setEnabled(true);
 		// setCursor(null); //turn off the wait cursor
 	}
-
-	public void setAttempts(int attempts2) {
-		ATTEMPTS = attempts2;
-		totalIterations = ATTEMPTS + (2 * k) * ATTEMPTS;
-
-		
-	}
-
-
 }

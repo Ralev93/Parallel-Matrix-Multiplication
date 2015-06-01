@@ -15,126 +15,141 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-
+import java.util.Random;
 
 public class Matrix {
 
-    private int rows; // m
-    private int columns; // n
-    private double[][] matrix;
-    
-    private File file;
+	private int rows; // m
+	private int columns; // n
+	private double[][] matrix;
 
-    public Matrix() {
-        this(0, 0);
-    }
+	private File file;
 
-    public Matrix(double[][] matrix) {
-        rows = matrix.length;
-        columns = matrix[0].length;
-        this.matrix = matrix;
-    }
+	public Matrix() {
+		this(0, 0);
+	}
+	
+	public Matrix(File file) throws FileNotFoundException, IOException {
+		this.readFromFile(file);
+	}
 
-    public Matrix(int rows, int columns) {
-        this.rows = rows;
-        this.columns = columns;
+	public Matrix(double[][] matrix) {
+		rows = matrix.length;
+		columns = matrix[0].length;
+		this.matrix = matrix;
+	}
 
-        matrix = new double[rows][columns];
-    }
+	public Matrix(int rows, int columns) {
+		this.rows = rows;
+		this.columns = columns;
 
-    public int getRows() {
-        return rows;
-    }
+		matrix = new double[rows][columns];
+	}
 
-    public int getColumns() {
-        return columns;
-    }
+	public int getRows() {
+		return rows;
+	}
 
-    public void setElementAt(int row, int column, double x) {
-        matrix[row][column] = x;
-    }
+	public int getColumns() {
+		return columns;
+	}
 
-    public double getElementAt(int row, int column) {
-        return matrix[row][column];
-    }
+	public void setElementAt(int row, int column, double x) {
+		matrix[row][column] = x;
+	}
 
-    public void multiplyFromTo(Matrix left, Matrix right, int begin, int end) {
-        int i, j;
-        
-        for (int k = begin; k < end; k++) {
-            for (i = 0; i < left.getColumns(); i++) {
-                for (j = 0; j < right.getColumns(); j++) {
-                    this.matrix[k][j] += left.getElementAt(k, i) * right.getElementAt(i, j);
-                }
-            }
-        }
-    }
+	public double getElementAt(int row, int column) {
+		return matrix[row][column];
+	}
 
-    public void readFromFile(File file) throws FileNotFoundException, IOException {
-//        file = new File(DEFAULT_DIR + path);
-        try (DataInputStream in = new DataInputStream(new BufferedInputStream(
-                new FileInputStream(file)))) {
+	public void generateRandom() {
+		Random r = new Random();
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				matrix[i][j] = r.nextDouble();
+			}
+		}
+	}
 
-            rows = in.readInt();//m
-            columns = in.readInt();//n
-            matrix = new double[rows][columns];
+	public void multiplyFromTo(Matrix left, Matrix right, int begin, int end) {
+		int i, j;
 
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < columns; j++) {
-                    matrix[i][j] = in.readDouble();
-                }
-            }
-        }
-    }
-    
+		for (int k = begin; k < end; k++) {
+			for (i = 0; i < left.getColumns(); i++) {
+				for (j = 0; j < right.getColumns(); j++) {
+					this.matrix[k][j] += left.getElementAt(k, i)
+							* right.getElementAt(i, j);
+				}
+			}
+		}
+	}
 
-    public void writeToFile(String path) throws FileNotFoundException, IOException {
-        file = new File("." + path);
-        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(
-                new FileOutputStream(file)))) {
+	public void readFromFile(File file) throws FileNotFoundException,
+			IOException {
+		// file = new File(DEFAULT_DIR + path);
+		try (DataInputStream in = new DataInputStream(new BufferedInputStream(
+				new FileInputStream(file)))) {
 
-            out.writeInt(rows);
-            out.writeInt(columns);
+			rows = in.readInt();// m
+			columns = in.readInt();// n
+			matrix = new double[rows][columns];
 
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < columns; j++) {
-                    out.writeDouble(matrix[i][j]);
-                }
-            }
-        }
-    }
+			for (int i = 0; i < rows; i++) {
+				for (int j = 0; j < columns; j++) {
+					matrix[i][j] = in.readDouble();
+				}
+			}
+		}
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Matrix other = (Matrix) obj;
-        if (this.rows != other.rows) {
-            return false;
-        }
-        if (this.columns != other.columns) {
-            return false;
-        }
-        if (!Arrays.deepEquals(this.matrix, other.matrix)) {
-            return false;
-        }
-        return true;
-    }
+	public void writeToFile(String path) throws FileNotFoundException,
+			IOException {
+		file = new File("." + path);
+		try (DataOutputStream out = new DataOutputStream(
+				new BufferedOutputStream(new FileOutputStream(file)))) {
 
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder("");
-        for (int i = 0; i < getRows(); i++) {
-            for (int j = 0; j < getColumns(); j++) {
-                str.append(String.format("%f \t", getElementAt(i, j)));
-            }
-            str.append("\n");
-        }
-        return new String(str);
-    }
+			out.writeInt(rows);
+			out.writeInt(columns);
+
+			for (int i = 0; i < rows; i++) {
+				for (int j = 0; j < columns; j++) {
+					out.writeDouble(matrix[i][j]);
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Matrix other = (Matrix) obj;
+		if (this.rows != other.rows) {
+			return false;
+		}
+		if (this.columns != other.columns) {
+			return false;
+		}
+		if (!Arrays.deepEquals(this.matrix, other.matrix)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder("");
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getColumns(); j++) {
+				str.append(String.format("%f \t", getElementAt(i, j)));
+			}
+			str.append("\n");
+		}
+		return new String(str);
+	}
 
 }
