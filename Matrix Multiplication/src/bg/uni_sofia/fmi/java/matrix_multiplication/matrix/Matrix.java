@@ -16,10 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-/**
- *
- * @author a
- */
+
 public class Matrix {
 
     private int rows; // m
