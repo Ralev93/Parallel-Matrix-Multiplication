@@ -20,6 +20,7 @@ import javax.swing.JFileChooser;
 import bg.uni_sofia.fmi.java.matrix_multiplication.CalculationTask;
 
 import javax.swing.JProgressBar;
+import javax.swing.JTextField;
 
 public class MainWindow {
 
@@ -27,8 +28,14 @@ public class MainWindow {
 	private JButton btnCalculate;
 	private JProgressBar progressBar;
 	private final File DEFAULT_DIR = new File(".\\TestData\\ex1");
-	private CalculationTask calcTask = new CalculationTask();
+	private CalculationTask calcTask;// = new CalculationTask();
 	private JButton btnNewButton;
+	private JTextField textField;
+
+	private File leftFile = new File(".\\TestData\\ex1\\left");
+	private File rightFile = new File(".\\TestData\\ex1\\right");
+	private File resFile = new File(".\\TestData\\ex1\\result");
+	private int attempts;
 
 	private File getMatrixFile() {
 		JFileChooser chooser = new JFileChooser();
@@ -76,12 +83,12 @@ public class MainWindow {
 		frame.setBounds(100, 100, 406, 261);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		calcTask.setFrame(frame);
 
 		JButton btnLoadFrstMatrix = new JButton("Load matrix 1");
 		btnLoadFrstMatrix.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				calcTask.setLeftFile(getMatrixFile());
+				// calcTask.setLeftFile(getMatrixFile());
+				leftFile = getMatrixFile();
 			}
 		});
 		btnLoadFrstMatrix.setBounds(10, 28, 158, 23);
@@ -90,7 +97,8 @@ public class MainWindow {
 		JButton btnLoadSndMatrix = new JButton("Load matrix 2");
 		btnLoadSndMatrix.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				calcTask.setRightFile(getMatrixFile());
+				// calcTask.setRightFile(getMatrixFile());
+				rightFile = getMatrixFile();
 			}
 		});
 		btnLoadSndMatrix.setBounds(222, 28, 158, 23);
@@ -99,6 +107,15 @@ public class MainWindow {
 		btnCalculate = new JButton("Calculate");
 		btnCalculate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+
+				calcTask = new CalculationTask();
+				calcTask.setFrame(frame);
+				calcTask.setLeftFile(leftFile);
+				calcTask.setRightFile(rightFile);
+				calcTask.setExpectedResultFile(resFile);
+				calcTask.setAttempts(attempts);
+				progressBar.setMaximum(calcTask.getTotalIterations());
+
 				calcTask.addPropertyChangeListener(new PropertyChangeListener() {
 					public void propertyChange(PropertyChangeEvent evt) {
 						if ("progress" == evt.getPropertyName()) {
@@ -117,7 +134,8 @@ public class MainWindow {
 		JButton btnLoadExpectedResult = new JButton("TMP");
 		btnLoadExpectedResult.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				calcTask.setExpectedResultFile(getMatrixFile());
+				// calcTask.setExpectedResultFile(getMatrixFile());
+				resFile = getMatrixFile();
 			}
 		});
 		btnLoadExpectedResult.setBounds(186, 28, 26, 23);
@@ -138,11 +156,23 @@ public class MainWindow {
 		});
 		btnNewButton.setBounds(314, 90, 50, 35);
 		try {
-			Image img = ImageIO.read(new File(".\\resources\\Help.png")).getScaledInstance( 50, 35,  java.awt.Image.SCALE_SMOOTH ) ; ;
+			Image img = ImageIO.read(new File(".\\resources\\Help.png"))
+					.getScaledInstance(50, 35, java.awt.Image.SCALE_SMOOTH);
+			;
 			btnNewButton.setIcon(new ImageIcon(img));
 		} catch (IOException ex) {
 		}
 		frame.getContentPane().add(btnNewButton);
+
+		textField = new JTextField();
+		textField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				attempts = Integer.parseInt(textField.getText());
+			}
+		});
+		textField.setBounds(10, 97, 50, 20);
+		frame.getContentPane().add(textField);
+		textField.setColumns(10);
 
 	}
 }

@@ -16,9 +16,9 @@ import bg.uni_sofia.fmi.java.matrix_multiplication.matrix.Matrix;
 import bg.uni_sofia.fmi.java.matrix_multiplication.parallel.MatrixMultiplierParallel;
 
 public class CalculationTask extends SwingWorker<Void, Void> {
-	private final static int ATTEMPTS = 1;
+	private int ATTEMPTS = 3;
 	private static final int k = Runtime.getRuntime().availableProcessors();
-	private final static int totalIterations = ATTEMPTS + (2 * k) * ATTEMPTS;
+	private int totalIterations = this.getAttempts() + (2 * k) * this.getAttempts();
 
 	private float avrglinearTime = 0;
 	private float[] coresTimes = new float[2 * k];
@@ -51,9 +51,17 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		
 	}
 
-	private int calcProgress(int progress) {
-		return (int) ((float) progress / totalIterations * 100);
+	public int getTotalIterations() {
+		return totalIterations;
 	}
+	
+	public int getAttempts() {
+		return ATTEMPTS;
+	}
+//	private int calcProgress(int progress) {
+////		return (int) ((float) progress / totalIterations * 100);
+//		return progress;
+//	}
 
 	private void showTable() {
 		System.out.printf("\n\n%-10s %-10s\n", "Cores", "Acceleration");
@@ -66,6 +74,7 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	private Matrix invokeLinearMultiply(Matrix left, Matrix right,
 			MatrixMultiplier linear) {
 		Matrix result = new Matrix();
+		System.out.println("Linear multiplying started");
 		try {
 			long linearTime = 0;
 			for (int i = 0; i < ATTEMPTS; i++) {
@@ -77,10 +86,10 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 				linearTime += endLinear - startLinear;
 
 				progress = i + 1;
-				setProgress(calcProgress(progress));
+				setProgress(progress);
 			}
 			avrglinearTime = linearTime / ATTEMPTS;
-
+		System.out.println("Linear multiplying finished for: " + avrglinearTime);
 		} catch (MatrixMultiplicationImpossible ex) {
 			JOptionPane.showMessageDialog(null, MULTIPLICATION_ERROR_MSG,
 					"Error", JOptionPane.ERROR_MESSAGE);
@@ -93,6 +102,8 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 			MatrixMultiplierParallel parallel) {
 
 		Matrix result = new Matrix();
+		
+		System.out.println("Parallel multiplying started");
 		try {
 			for (int i = 1; i <= 2 * k; i++) {
 				long parallelTime = 0;
@@ -104,11 +115,12 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 					long endParallel = System.currentTimeMillis();
 					parallelTime += endParallel - startParallel;
 
-					setProgress(calcProgress(++progress));
+					setProgress(++progress);
 				}
 				float avrgParallelTime = parallelTime / ATTEMPTS;
 				coresTimes[i - 1] = avrglinearTime / avrgParallelTime;
 			}
+			System.out.println("Parallel multiplying finished.");
 		} catch (MatrixMultiplicationImpossible ex) {
 			JOptionPane.showMessageDialog(null, MULTIPLICATION_ERROR_MSG,
 					"Error", JOptionPane.ERROR_MESSAGE);
@@ -146,8 +158,6 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		result = invokeLinearMultiply(left, right, linear);
 		result = invokeParallelMultiply(left, right, parallel);
 
-		showTable();
-
 		if (!expectedResult.equals(result)) {
 			JOptionPane.showMessageDialog(null,
 					"Incorrect matrix multiplication!", "Error",
@@ -160,8 +170,16 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	@Override
 	public void done() {
 		Toolkit.getDefaultToolkit().beep();
+		showTable();
 		// btnCalculate.setEnabled(true);
 		// setCursor(null); //turn off the wait cursor
+	}
+
+	public void setAttempts(int attempts2) {
+		ATTEMPTS = attempts2;
+		totalIterations = ATTEMPTS + (2 * k) * ATTEMPTS;
+
+		
 	}
 
 
