@@ -46,9 +46,9 @@ public class MainWindow {
 																	// ON UNIX
 																	// SYSTEMS
 																	// TOO!!!
-	private File leftFile = new File(".\\TestData\\ex1\\left");
-	private File rightFile = new File(".\\TestData\\ex1\\right");
-	private File resFile = new File(".\\TestData\\ex1\\result");
+	private File leftFile = new File(".\\TestData\\ex1\\left.txt");
+	private File rightFile = new File(".\\TestData\\ex1\\right.txt");
+	private File resFile = new File(".\\TestData\\ex1\\result.txt");
 	private int attempts = 3;
 	private boolean quiet = false;
 

@@ -53,7 +53,6 @@ public class MatrixMultiplierParallel implements MatrixMultiplier {
 				}
 			}
 
-			accumulate = 10;
 
 		}
 	}

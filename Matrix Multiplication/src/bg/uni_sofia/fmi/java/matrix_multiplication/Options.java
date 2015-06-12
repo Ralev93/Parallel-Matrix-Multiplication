@@ -13,7 +13,8 @@ public class Options {
 	// -k
 	private int k;
 	// -i
-	private File input;
+	private File leftInput;
+	private File rightInput;
 	// -o
 	private File output;
 	// -q
@@ -75,14 +76,13 @@ public class Options {
 			case "-tasks":
 				threads = Integer.parseInt(options[++i]);
 
-				break;
-			}
+				break;			}
 		}
 
 		if (showGUI)
 			useFile = true;
 
-		if (!showGUI && useFile && input == null)
+		if (!showGUI && useFile && (leftInput == null || rightInput == null))
 			throw new InvalidOptionException("Incorrect input file path.");
 
 		if (!showGUI && !useFile && (m <= 0 || n <= 0 || k <= 0))
@@ -138,12 +138,26 @@ public class Options {
 	public void setThreadsCount(int threadsCount) {
 		threads = threadsCount;
 	}
-
-	public File getInputFile() {
-		return input;
+public File getLeftInputFile(){
+		return leftInput;
 	}
-
-	public File getOutputFile() {
+public void setLeftInputFile(File leftInput)
+	{
+		this.leftInput = leftInput;
+	}
+	
+	public File getRightInputFile()
+	{
+		return rightInput;
+	}
+	
+	public void setRightInputFile(File rightInput)
+	{
+		this.rightInput = rightInput;
+	}
+	
+	public File getOutputFile()
+	{
 		return output;
 	}
 

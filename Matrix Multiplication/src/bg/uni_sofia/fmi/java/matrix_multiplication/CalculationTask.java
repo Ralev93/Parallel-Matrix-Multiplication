@@ -51,6 +51,8 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		this.coresTimes = new float[2 * threads];
 		this.totalIterations = this.attempts + (2 * this.threads)
 				* this.attempts;
+		this.leftFile = options.getLeftInputFile();
+		this.rightFile = options.getRightInputFile();
 	}
 
 	public void setRightFile(File rightFile) {
@@ -93,13 +95,14 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	}
 
 	private Matrix invokeLinearMultiply(Matrix left, Matrix right,
-			MatrixMultiplier linear) {
+			MatrixMultiplierParallel linear) {
 		Matrix result = new Matrix();
 		logger.logln("Linear multiplying started");
+		linear.setParallelismLevel(1);
 		try {
 			long linearTime = 0;
 			for (int i = 0; i < attempts && !this.isCancelled(); i++) {
-
+				
 				long startLinear = System.currentTimeMillis();
 				result = linear.multiply(left, right);
 				long endLinear = System.currentTimeMillis();
@@ -179,11 +182,12 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		}
 
 		setProgress(0);
-		invokeLinearMultiply(left, right, new MatrixMultiplierLinear());
+		invokeLinearMultiply(left, right, new MatrixMultiplierParallel());
 		result = invokeParallelMultiply(left, right,
 				new MatrixMultiplierParallel());
 
-		if (this.isCancelled()) {
+			result.writeToFile(options.getOutputFile());
+		}		if (this.isCancelled()) {
 			logger.logln("Calcuation aborted!");
 			setProgress(0);
 		}
@@ -222,6 +226,6 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 
 	public void call() throws Exception {
 		doInBackground();
-		showTable();
+		done();
 	}
 }
