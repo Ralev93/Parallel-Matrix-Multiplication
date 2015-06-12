@@ -7,15 +7,18 @@ package bg.uni_sofia.fmi.java.matrix_multiplication.matrix;
  */
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Matrix {
 
@@ -87,38 +90,75 @@ public class Matrix {
 	public void readFromFile(File file) throws FileNotFoundException,
 			IOException {
 		// file = new File(DEFAULT_DIR + path);
-		try (DataInputStream in = new DataInputStream(new BufferedInputStream(
-				new FileInputStream(file)))) {
+		try (Scanner in = new Scanner( file)) {
 
-			rows = in.readInt();// m
-			columns = in.readInt();// n
+			rows = in.nextInt();// m
+			columns = in.nextInt();// n
 			matrix = new double[rows][columns];
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
-					matrix[i][j] = in.readDouble();
+					matrix[i][j] = in.nextDouble();
 				}
 			}
 		}
 	}
 
-	public void writeToFile(String path) throws FileNotFoundException,
-			IOException {
-		file = new File("." + path);
-		try (DataOutputStream out = new DataOutputStream(
-				new BufferedOutputStream(new FileOutputStream(file)))) {
+	public void readFromFileBinary(File file) throws FileNotFoundException,
+	IOException {
+// file = new File(DEFAULT_DIR + path);
+try (DataInputStream in = new DataInputStream(new BufferedInputStream(
+		new FileInputStream(file)))) {
 
-			out.writeInt(rows);
-			out.writeInt(columns);
+	rows = in.readInt();// ms
+	columns = in.readInt();// n
+	matrix = new double[rows][columns];
+
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < columns; j++) {
+			matrix[i][j] = in.readDouble();
+		}
+	}
+}
+}
+	
+	public void writeToFile(File file) throws FileNotFoundException,
+			IOException {
+		try (BufferedWriter out = 
+				new BufferedWriter(new FileWriter(file))) {
+
+			out.write(String.valueOf(rows));
+			out.newLine();
+			out.write(String.valueOf(columns));
+			out.newLine();
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
-					out.writeDouble(matrix[i][j]);
+					out.write(String.valueOf(matrix[i][j]));
+					out.write(" ");
 				}
+				out.newLine();
 			}
 		}
 	}
 
+	public void writeToFileBinary(String path) throws FileNotFoundException,
+	IOException {
+file = new File("." + path);
+try (DataOutputStream out = new DataOutputStream(
+		new BufferedOutputStream(new FileOutputStream(file)))) {
+
+	out.writeInt(rows);
+	out.writeInt(columns);
+
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < columns; j++) {
+			out.writeDouble(matrix[i][j]);
+		}
+	}
+}
+}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

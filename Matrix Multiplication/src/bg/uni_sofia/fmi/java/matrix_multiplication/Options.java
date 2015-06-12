@@ -13,7 +13,8 @@ public class Options {
 	// -k
 	private int k;
 	// -i
-	private File input;
+	private File leftInput;
+	private File rightInput;
 	// -o
 	private File output;
 	// -q
@@ -54,8 +55,8 @@ public class Options {
 				case "-k": k = Integer.parseInt(options[++i]);
 							useFile = false;
 							break;
-				case "-i": input = new File(options[++i]);
-							
+				case "-i": leftInput = new File(options[++i]);
+							rightInput = new File(options[++i]);
 							useFile = true;
 							break;
 				case "-o": output = new File(options[++i]);
@@ -80,7 +81,7 @@ public class Options {
 		if(showGUI)
 			useFile = true;
 		
-		if (!showGUI && useFile && input == null)
+		if (!showGUI && useFile && (leftInput == null || rightInput == null))
 			throw new InvalidOptionException("Incorrect input file path.");
 			
 			if(!showGUI && !useFile && (m <= 0 || n <= 0 || k <= 0))
@@ -149,9 +150,24 @@ public class Options {
 		threads = threadsCount;
 	}
 	
-	public File getInputFile()
+	public File getLeftInputFile()
 	{
-		return input;
+		return leftInput;
+	}
+	
+	public void setLeftInputFile(File leftInput)
+	{
+		this.leftInput = leftInput;
+	}
+	
+	public File getRightInputFile()
+	{
+		return rightInput;
+	}
+	
+	public void setRightInputFile(File rightInput)
+	{
+		this.rightInput = rightInput;
 	}
 	
 	public File getOutputFile()

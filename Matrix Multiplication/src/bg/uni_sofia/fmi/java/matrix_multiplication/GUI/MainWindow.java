@@ -42,9 +42,9 @@ public class MainWindow {
 
 	private CalculationTask calcTask;
 	private final File DEFAULT_DIR = new File(".\\TestData\\ex1");
-	private File leftFile = new File(".\\TestData\\ex1\\left");
-	private File rightFile = new File(".\\TestData\\ex1\\right");
-	private File resFile = new File(".\\TestData\\ex1\\result");
+	private File leftFile = new File(".\\TestData\\ex1\\left.txt");
+	private File rightFile = new File(".\\TestData\\ex1\\right.txt");
+	private File resFile = new File(".\\TestData\\ex1\\result.txt");
 	private int attempts = 3;
 	private boolean quiet = false;
 	
