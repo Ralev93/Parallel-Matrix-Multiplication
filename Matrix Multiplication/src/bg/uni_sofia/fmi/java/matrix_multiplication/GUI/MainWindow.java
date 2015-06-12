@@ -18,6 +18,7 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 
 import bg.uni_sofia.fmi.java.matrix_multiplication.CalculationTask;
+import bg.uni_sofia.fmi.java.matrix_multiplication.Options;
 
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
@@ -46,8 +47,8 @@ public class MainWindow {
 	private File resFile = new File(".\\TestData\\ex1\\result");
 	private int attempts = 3;
 	private boolean quiet = false;
-	private int threads = Runtime.getRuntime().availableProcessors();
 	
+	private static Options options;
 	
 
 	private File getMatrixFile() {
@@ -68,7 +69,8 @@ public class MainWindow {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void open(final Options options) {
+		MainWindow.options = options;
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -128,7 +130,7 @@ public class MainWindow {
 		btnCalculate = new JButton("Calculate");
 		btnCalculate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				calcTask = new CalculationTask(threads, attempts);
+				calcTask = new CalculationTask(attempts, options);
 				calcTask.setFrame(frame);
 				calcTask.setLeftFile(leftFile);
 				calcTask.setRightFile(rightFile);
@@ -227,7 +229,7 @@ public class MainWindow {
 		txtThreds = new JTextField();
 		txtThreds.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				threads = Integer.parseInt(txtThreds.getText());
+				options.setThreadsCount( Integer.parseInt(txtThreds.getText()));
 			}
 		});
 		txtThreds.setColumns(10);
