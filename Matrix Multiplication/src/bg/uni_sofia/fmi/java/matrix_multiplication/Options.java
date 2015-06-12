@@ -163,4 +163,9 @@ public class Options {
 	{
 		return useFile;
 	}
+	
+	public void setShouldUseFile( boolean useFile )
+	{
+		this.useFile = useFile;	
+	}
 }
