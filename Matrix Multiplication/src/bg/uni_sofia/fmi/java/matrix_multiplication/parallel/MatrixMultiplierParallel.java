@@ -15,22 +15,22 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.plaf.multi.MultiPanelUI;
+
 /**
  *
  * @author a
  */
 
-
-
 public class MatrixMultiplierParallel implements MatrixMultiplier {
-	
+
 	public class ComputeThread implements Runnable {
 
 		private int data;
 		private int k;
 		private Matrix left, right, result;
 
-		public ComputeThread(int l, Matrix left,Matrix right, Matrix result) {
+		public ComputeThread(int l, Matrix left, Matrix right, Matrix result) {
 			this.result = result;
 			data = l;
 			k = data;
@@ -55,8 +55,9 @@ public class MatrixMultiplierParallel implements MatrixMultiplier {
 
 			accumulate = 10;
 
-		}}
-	
+		}
+	}
+
 	int parallelismLevel = 1;
 
 	public void setParallelismLevel(int parallelismLevel) {
@@ -66,58 +67,70 @@ public class MatrixMultiplierParallel implements MatrixMultiplier {
 	@Override
 	public Matrix multiply(final Matrix left, final Matrix right)
 			throws MatrixMultiplicationImpossible {
+		return multiplyWithExecutor(left, right);
+	}
 
-		//ForkJoinPool pool = new ForkJoinPool(parallelismLevel);
+	public Matrix multiplyWithTask(final Matrix left, final Matrix right)
+			throws MatrixMultiplicationImpossible {
 
-		ExecutorService executor = Executors.newFixedThreadPool(parallelismLevel);
-		
+		ForkJoinPool pool = new ForkJoinPool(parallelismLevel);
+
 		if (left.getColumns() != right.getRows()) {
 			throw new MatrixMultiplicationImpossible();
 		}
 
 		Matrix result = new Matrix(left.getRows(), right.getColumns());
 
-		
+		try {
+			// pool.invoke(new MatrixMultiplierTask2(left, right, result, -1,
+			// 0));
+			pool.invoke(new MatrixMultiplierTask1(left, right, 0, left
+					.getRows(), result));
 
-		 //ComputeThread threads[] = new ComputeThread[left.getRows()];
-		 for (int k = 0; k < left.getRows(); k++) {
-		executor.execute(new ComputeThread(k, left, right, result));
-		
-		 }
-//		
-//		 for (int k = 0; k < left.getRows(); k++)
-//		 try {
-//		 threads[k].join();
-//		 } catch (InterruptedException e) {
-//		 // TODO Auto-generated catch block
-//		 e.printStackTrace();
-//		 }
+			return result;
+		} finally {
+			pool.shutdown();
+		}
+	}
 
-//		try {
-//			for (int k = 0; k < left.getRows(); k++) {
-//				pool.invoke(new RowMultiplicationTask(k, left, right, result));
-//			}
-//
-//			return result;
-//		} finally {
-//			pool.shutdown();
-//		}
+	public Matrix multiplyWithExecutor(final Matrix left, final Matrix right)
+			throws MatrixMultiplicationImpossible {
 
-		// System.out.println(result.toString());
+		ExecutorService executor = Executors
+				.newFixedThreadPool(parallelismLevel);
+
+		if (left.getColumns() != right.getRows()) {
+			throw new MatrixMultiplicationImpossible();
+		}
+
+		Matrix result = new Matrix(left.getRows(), right.getColumns());
+
+		// ComputeThread threads[] = new ComputeThread[left.getRows()];
+		for (int k = 0; k < left.getRows(); k++) {
+			executor.execute(new ComputeThread(k, left, right, result));
+
+		}
 		//
+		// for (int k = 0; k < left.getRows(); k++)
 		// try {
-		// // pool.invoke(new MatrixMultiplierTask2(left, right, result, -1,
-		// // 0));
-		// pool.invoke(new MatrixMultiplierTask1(left, right, 0, left
-		// .getRows(), result));
+		// threads[k].join();
+		// } catch (InterruptedException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
+		// try {
+		// for (int k = 0; k < left.getRows(); k++) {
+		// pool.invoke(new RowMultiplicationTask(k, left, right, result));
+		// }
 		//
 		// return result;
 		// } finally {
 		// pool.shutdown();
 		// }
-		 
-		 executor.shutdown();
-		 try {
+
+		executor.shutdown();
+		try {
 			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -126,4 +139,31 @@ public class MatrixMultiplierParallel implements MatrixMultiplier {
 		return result;
 	}
 
+	public Matrix multiplyWithThreads(final Matrix left, final Matrix right)
+			throws MatrixMultiplicationImpossible {
+
+		if (left.getColumns() != right.getRows()) {
+			throw new MatrixMultiplicationImpossible();
+		}
+
+		Matrix result = new Matrix(left.getRows(), right.getColumns());
+		
+		 Thread threads[] = new Thread[parallelismLevel];
+		for (int k = 0; k < parallelismLevel; k++) {
+			threads[k] = new Thread( new ComputeThread(k, left, right, result));
+			threads[k].start();
+
+		}
+		
+		 for (int k = 0; k < parallelismLevel; k++)
+		 try {
+		 threads[k].wait(Long.MAX_VALUE);
+		 } catch (InterruptedException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 }
+		 
+		 return result;
+	}
+	
 }
