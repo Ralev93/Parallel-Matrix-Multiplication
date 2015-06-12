@@ -104,7 +104,7 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 320, 267);
+		frame.setBounds(100, 100, 360, 267);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -131,7 +131,7 @@ public class MainWindow {
 				options.setRightInputFile(getMatrixFile());
 			}
 		});
-		btnLoadSndMatrix.setBounds(154, 28, 142, 23);
+		btnLoadSndMatrix.setBounds(154, 28, 180, 23);
 		frame.getContentPane().add(btnLoadSndMatrix);
 
 		/*
@@ -157,7 +157,7 @@ public class MainWindow {
 				calcTask.execute();
 			}
 		});
-		btnCalculate.setBounds(154, 62, 89, 50);
+		btnCalculate.setBounds(154, 62, 94, 50);
 		frame.getContentPane().add(btnCalculate);
 
 		/*
@@ -166,27 +166,27 @@ public class MainWindow {
 		progressBar = new JProgressBar(0, 100);
 		progressBar.setValue(0);
 		progressBar.setStringPainted(true);
-		progressBar.setBounds(10, 169, 286, 44);
+		progressBar.setBounds(10, 169, 324, 44);
 		frame.getContentPane().add(progressBar);
 
 		/*
 		 * Button for the about section
 		 */
-		btnAbout = new JButton("");
+		btnAbout = new JButton("About");
 		btnAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				About ab = new About();
 				ab.setVisible(true);
 			}
 		});
-		btnAbout.setBounds(277, 123, 20, 23);
-		try {
-			Image img = ImageIO.read(new File(URI.create(".\\resources\\Help.png")))
-					.getScaledInstance(btnAbout.getHeight(),
-							btnAbout.getWidth(), java.awt.Image.SCALE_SMOOTH);
-			btnAbout.setIcon(new ImageIcon(img));
-		} catch (IOException ex) {
-		}
+		btnAbout.setBounds(258, 123, 76, 35);
+//		try {
+//			Image img = ImageIO.read(new File(URI.create(".\\resources\\Help.png")))
+//					.getScaledInstance(btnAbout.getHeight(),
+//							btnAbout.getWidth(), java.awt.Image.SCALE_SMOOTH);
+//			btnAbout.setIcon(new ImageIcon(img));
+//		} catch (IOException ex) {
+//		}
 		frame.getContentPane().add(btnAbout);
 
 		/*
@@ -206,20 +206,20 @@ public class MainWindow {
 		/*
 		 * Button stop
 		 */
-		btnStop = new JButton("");
+		btnStop = new JButton("Stop");
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				calcTask.cancel(true);
 			}
 		});
-		btnStop.setBounds(253, 62, 43, 50);
-		try {
-			Image img = ImageIO.read(new File(URI.create(".\\resources\\Stop.png")))
-					.getScaledInstance(btnStop.getHeight(), btnStop.getWidth(),
-							java.awt.Image.SCALE_SMOOTH);
-			btnStop.setIcon(new ImageIcon(img));
-		} catch (IOException e) {
-		}
+		btnStop.setBounds(258, 62, 76, 50);
+//		try {
+//			Image img = ImageIO.read(new File(URI.create(".\\resources\\Stop.png")))
+//					.getScaledInstance(btnStop.getHeight(), btnStop.getWidth(),
+//							java.awt.Image.SCALE_SMOOTH);
+//			btnStop.setIcon(new ImageIcon(img));
+//		} catch (IOException e) {
+//		}
 		frame.getContentPane().add(btnStop);
 
 		/*
