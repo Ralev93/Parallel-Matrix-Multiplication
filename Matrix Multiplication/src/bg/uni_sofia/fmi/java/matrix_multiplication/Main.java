@@ -15,17 +15,6 @@ public class Main {
 	private final static int attempts = 3;
 	
     public static void main(String[] args) {
-//    	Matrix matrix = new Matrix();
-//    	try {
-//			matrix.readFromFileBinary(new File(".\\TestData\\ex1\\right"));
-//			matrix.writeToFile(new File(".\\TestData\\ex1\\right.txt"));
-//		} catch (FileNotFoundException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
     	
         Options options = null;
 		try {
