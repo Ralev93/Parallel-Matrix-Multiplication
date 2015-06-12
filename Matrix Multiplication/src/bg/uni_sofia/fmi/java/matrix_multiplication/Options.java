@@ -55,8 +55,8 @@ public class Options {
 				useFile = false;
 				break;
 			case "-i":
-				input = new File(options[++i]);
-
+				leftInput = new File(options[++i]);
+				rightInput = new File(options[++i]);
 				useFile = true;
 				break;
 			case "-o":
@@ -76,7 +76,8 @@ public class Options {
 			case "-tasks":
 				threads = Integer.parseInt(options[++i]);
 
-				break;			}
+				break;
+			}
 		}
 
 		if (showGUI)
@@ -138,26 +139,24 @@ public class Options {
 	public void setThreadsCount(int threadsCount) {
 		threads = threadsCount;
 	}
-public File getLeftInputFile(){
+
+	public File getLeftInputFile() {
 		return leftInput;
 	}
-public void setLeftInputFile(File leftInput)
-	{
+
+	public void setLeftInputFile(File leftInput) {
 		this.leftInput = leftInput;
 	}
-	
-	public File getRightInputFile()
-	{
+
+	public File getRightInputFile() {
 		return rightInput;
 	}
-	
-	public void setRightInputFile(File rightInput)
-	{
+
+	public void setRightInputFile(File rightInput) {
 		this.rightInput = rightInput;
 	}
-	
-	public File getOutputFile()
-	{
+
+	public File getOutputFile() {
 		return output;
 	}
 

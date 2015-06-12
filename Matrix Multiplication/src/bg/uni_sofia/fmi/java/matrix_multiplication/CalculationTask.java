@@ -69,7 +69,6 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 
 	public void setWindow(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
-		;
 	}
 
 	public void setQuiet(boolean quiet) {
@@ -102,7 +101,7 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		try {
 			long linearTime = 0;
 			for (int i = 0; i < attempts && !this.isCancelled(); i++) {
-				
+
 				long startLinear = System.currentTimeMillis();
 				result = linear.multiply(left, right);
 				long endLinear = System.currentTimeMillis();
@@ -171,8 +170,7 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 
 		if (!options.shouldUseFile() && !options.shouldShowGUI()) {
 			left = new Matrix(options.getLeftRows(), options.getLeftColumns());
-			right = new Matrix(options.getRightRows(),
-					options.getRightColumns());
+			right = new Matrix(options.getRightRows(), options.getRightColumns());
 
 			left.generateRandom();
 			right.generateRandom();
@@ -183,11 +181,9 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 
 		setProgress(0);
 		invokeLinearMultiply(left, right, new MatrixMultiplierParallel());
-		result = invokeParallelMultiply(left, right,
-				new MatrixMultiplierParallel());
+		result = invokeParallelMultiply(left, right, new MatrixMultiplierParallel());
 
-			result.writeToFile(options.getOutputFile());
-		}		if (this.isCancelled()) {
+		if (this.isCancelled()) {
 			logger.logln("Calcuation aborted!");
 			setProgress(0);
 		}
@@ -202,18 +198,17 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	@Override
 	public void done() {
 		showTable();
-
+		
 		try {
 			if (options.getOutputFile() != null) {
-				result.writeToFile(options.getOutputFile().getPath());
+				result.writeToFile(options.getOutputFile());
 			} else {
 				JFileChooser chooser = mainWindow.getJFileChooser();
 				int rVal = chooser.showSaveDialog(null); // or mainWindow.frame
 				if (rVal == JFileChooser.APPROVE_OPTION) {
-					System.out.println("Ei tuka: " + chooser.getSelectedFile()
-							.getAbsolutePath());
-					result.writeToFile(new Path(chooser.getSelectedFile()
-							.getAbsolutePath()));
+					System.out.println("Ei tuka: "
+							+ chooser.getSelectedFile().getAbsolutePath());
+					result.writeToFile(chooser.getSelectedFile());
 				}
 			}
 		} catch (IOException e) {

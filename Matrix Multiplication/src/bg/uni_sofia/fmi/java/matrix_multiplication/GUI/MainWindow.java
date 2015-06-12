@@ -41,11 +41,7 @@ public class MainWindow {
 	private JTextField txtThreads;
 
 	private CalculationTask calcTask;
-	private final File DEFAULT_DIR = new File(".\\TestData\\ex1"); // TODO: MAKE
-																	// IT WORK
-																	// ON UNIX
-																	// SYSTEMS
-																	// TOO!!!
+	private final File DEFAULT_DIR = new File(".\\TestData\\ex1");//TODO: UNIX?
 	private File leftFile = new File(".\\TestData\\ex1\\left.txt");
 	private File rightFile = new File(".\\TestData\\ex1\\right.txt");
 	private File resFile = new File(".\\TestData\\ex1\\result.txt");
