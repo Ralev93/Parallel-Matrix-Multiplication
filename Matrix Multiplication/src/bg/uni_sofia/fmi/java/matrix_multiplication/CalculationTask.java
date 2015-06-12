@@ -154,7 +154,8 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	protected Void doInBackground() throws Exception {
 
 		if (options.shouldUseFile()
-				&& (leftFile == null || rightFile == null || expectedResultFile == null)) {
+				&& (leftFile == null || rightFile == null ))//|| expectedResultFile == null)) 
+		{
 			logger.log(FILE_ERROR_MSG, options.shouldShowGUI());
 			/* close the window */// TODO: Nullpointer exception if no gui!!!
 			if (options.shouldShowGUI())
