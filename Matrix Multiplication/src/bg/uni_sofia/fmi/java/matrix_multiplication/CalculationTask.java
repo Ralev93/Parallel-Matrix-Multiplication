@@ -4,11 +4,14 @@ import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import bg.uni_sofia.fmi.java.matrix_multiplication.GUI.MainWindow;
 import bg.uni_sofia.fmi.java.matrix_multiplication.exceptions.IncorrectMatrixMultiplication;
 import bg.uni_sofia.fmi.java.matrix_multiplication.exceptions.MatrixMultiplicationImpossible;
 import bg.uni_sofia.fmi.java.matrix_multiplication.linear.MatrixMultiplierLinear;
@@ -27,10 +30,11 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	private File leftFile; // file, containing the left matrix;
 	private File rightFile; // file, containing the right matrix;
 	private File expectedResultFile; // file, containing the expected result
-	private JFrame mainFrame; // the graphical interface
+	private MainWindow mainWindow; // the graphical interface
 	private Logger logger = new Logger(false);
 
 	private Options options;
+	private Matrix result;
 
 	/* message, shown when the calculation is incorrect */
 	private final static String MULTIPLICATION_INC_ERROR_MSG = "Wrong matrix multiplication!";
@@ -61,8 +65,9 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		this.expectedResultFile = expectedResultFile;
 	}
 
-	public void setFrame(JFrame frame) {
-		mainFrame = frame;
+	public void setWindow(MainWindow mainWindow) {
+		this.mainWindow = mainWindow;
+		;
 	}
 
 	public void setQuiet(boolean quiet) {
@@ -147,12 +152,14 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	@Override
 	protected Void doInBackground() throws Exception {
 
-		if (options.shouldUseFile() && ( leftFile == null || rightFile == null || expectedResultFile == null)) {
+		if (options.shouldUseFile()
+				&& (leftFile == null || rightFile == null || expectedResultFile == null)) {
 			logger.log(FILE_ERROR_MSG, options.shouldShowGUI());
 			/* close the window */// TODO: Nullpointer exception if no gui!!!
 			if (options.shouldShowGUI())
-				mainFrame.dispatchEvent(new WindowEvent(mainFrame,
-						WindowEvent.WINDOW_CLOSING));
+				mainWindow.getJFrame().dispatchEvent(
+						new WindowEvent(mainWindow.getJFrame(),
+								WindowEvent.WINDOW_CLOSING));
 			throw new FileNotFoundException();
 		}
 
@@ -167,47 +174,53 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 			left.generateRandom();
 			right.generateRandom();
 		} else {
-			left = new Matrix(leftFile); // TODO: or new
-											// Matrix(n,m).generateRandom()
-			right = new Matrix(rightFile); // TODO: or new
-											// Matrix(n,m).generateRandom()
+			left = new Matrix(leftFile);
+			right = new Matrix(rightFile);
 		}
-
-		//Matrix expectedResult = new Matrix(expectedResultFile); // TODO: delete
-																// this line;
-		Matrix result = null;
 
 		setProgress(0);
 		invokeLinearMultiply(left, right, new MatrixMultiplierLinear());
 		result = invokeParallelMultiply(left, right,
 				new MatrixMultiplierParallel());
 
-		if (options.getOutputFile() != null) {
-			result.writeToFile(options.getOutputFile().getPath());
-		}
-
 		if (this.isCancelled()) {
 			logger.logln("Calcuation aborted!");
 			setProgress(0);
 		}
 
-//		if (!expectedResult.equals(result)) {
-//			logger.log(MULTIPLICATION_INC_ERROR_MSG);
-//			throw new IncorrectMatrixMultiplication();
-//		}
+		// if (!expectedResult.equals(result)) {
+		// logger.log(MULTIPLICATION_INC_ERROR_MSG);
+		// throw new IncorrectMatrixMultiplication();
+		// }
 		return null;
 	}
 
 	@Override
 	public void done() {
-		Toolkit.getDefaultToolkit().beep();
 		showTable();
+
+		try {
+			if (options.getOutputFile() != null) {
+				result.writeToFile(options.getOutputFile().getPath());
+			} else {
+				JFileChooser chooser = mainWindow.getJFileChooser();
+				int rVal = chooser.showSaveDialog(null); // or mainWindow.frame
+				if (rVal == JFileChooser.APPROVE_OPTION) {
+					System.out.println("Ei tuka: " + chooser.getSelectedFile()
+							.getAbsolutePath());
+					result.writeToFile(new Path(chooser.getSelectedFile()
+							.getAbsolutePath()));
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("PROBLEM");
+		}
+
 		// btnCalculate.setEnabled(true);
 		// setCursor(null); //turn off the wait cursor
 	}
-	
-	public void call() throws Exception
-	{
+
+	public void call() throws Exception {
 		doInBackground();
 		showTable();
 	}

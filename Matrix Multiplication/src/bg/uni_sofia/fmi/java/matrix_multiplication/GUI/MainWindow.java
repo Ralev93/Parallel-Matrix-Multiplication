@@ -36,25 +36,37 @@ public class MainWindow {
 	private JButton btnAbout;
 	private JTextField txtAttempts;
 	private JButton btnStop;
-	private JLabel lblNewLabel;
+	private JLabel lblAttempts;
 	private JLabel lblMaxThreds;
-	private JTextField txtThreds;
+	private JTextField txtThreads;
 
 	private CalculationTask calcTask;
-	private final File DEFAULT_DIR = new File(".\\TestData\\ex1");
+	private final File DEFAULT_DIR = new File(".\\TestData\\ex1"); // TODO: MAKE
+																	// IT WORK
+																	// ON UNIX
+																	// SYSTEMS
+																	// TOO!!!
 	private File leftFile = new File(".\\TestData\\ex1\\left");
 	private File rightFile = new File(".\\TestData\\ex1\\right");
 	private File resFile = new File(".\\TestData\\ex1\\result");
 	private int attempts = 3;
 	private boolean quiet = false;
-	
+
 	private static Options options;
+	private JTextField txtLeftRows;
+	private JTextField txtLeftCols;
+	private JTextField txtRightCols;
+	private JFileChooser chooser = new JFileChooser();
+
+	public JFileChooser getJFileChooser() {
+		return chooser;
+	}
 	
+	public JFrame getJFrame() {
+		return frame;
+	}
 
 	private File getMatrixFile() {
-		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(DEFAULT_DIR);
-
 		int returnVal = chooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			return chooser.getSelectedFile();
@@ -95,9 +107,11 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 363, 261);
+		frame.setBounds(100, 100, 320, 267);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+
+		chooser.setCurrentDirectory(DEFAULT_DIR);
 
 		/*
 		 * Button for loading the first matrix
@@ -108,7 +122,7 @@ public class MainWindow {
 				leftFile = getMatrixFile();
 			}
 		});
-		btnLoadFrstMatrix.setBounds(10, 28, 158, 23);
+		btnLoadFrstMatrix.setBounds(10, 28, 134, 23);
 		frame.getContentPane().add(btnLoadFrstMatrix);
 
 		/*
@@ -120,19 +134,20 @@ public class MainWindow {
 				rightFile = getMatrixFile();
 			}
 		});
-		btnLoadSndMatrix.setBounds(178, 28, 158, 23);
+		btnLoadSndMatrix.setBounds(154, 28, 142, 23);
 		frame.getContentPane().add(btnLoadSndMatrix);
-		
+
 		/*
 		 * Button for calculating the matrix
 		 */
 
 		btnCalculate = new JButton("Calculate");
-		btnCalculate.addActionListener(new ActionListener() {
+		final MainWindow that = this; //TODO: REFACTOR
+		btnCalculate.addActionListener(new ActionListener() {	
 			public void actionPerformed(ActionEvent arg0) {
 				calcTask = new CalculationTask(attempts, options);
-				calcTask.setFrame(frame);
-				calcTask.setLeftFile(leftFile);
+				calcTask.setWindow(that);
+				calcTask.setLeftFile(leftFile); // TODO: getFrom options
 				calcTask.setRightFile(rightFile);
 				calcTask.setExpectedResultFile(resFile);
 				calcTask.setQuiet(quiet);
@@ -148,7 +163,7 @@ public class MainWindow {
 				calcTask.execute();
 			}
 		});
-		btnCalculate.setBounds(178, 62, 105, 50);
+		btnCalculate.setBounds(154, 62, 89, 50);
 		frame.getContentPane().add(btnCalculate);
 
 		/*
@@ -157,7 +172,7 @@ public class MainWindow {
 		progressBar = new JProgressBar(0, 100);
 		progressBar.setValue(0);
 		progressBar.setStringPainted(true);
-		progressBar.setBounds(10, 157, 326, 44);
+		progressBar.setBounds(10, 169, 286, 44);
 		frame.getContentPane().add(progressBar);
 
 		/*
@@ -170,15 +185,16 @@ public class MainWindow {
 				ab.setVisible(true);
 			}
 		});
-		btnAbout.setBounds(314, 123, 20, 23);
+		btnAbout.setBounds(277, 123, 20, 23);
 		try {
 			Image img = ImageIO.read(new File(".\\resources\\Help.png"))
-					.getScaledInstance(btnAbout.getHeight(), btnAbout.getWidth(), java.awt.Image.SCALE_SMOOTH);
+					.getScaledInstance(btnAbout.getHeight(),
+							btnAbout.getWidth(), java.awt.Image.SCALE_SMOOTH);
 			btnAbout.setIcon(new ImageIcon(img));
 		} catch (IOException ex) {
 		}
 		frame.getContentPane().add(btnAbout);
-		
+
 		/*
 		 * Text field for the number of attempts
 		 */
@@ -192,7 +208,7 @@ public class MainWindow {
 		txtAttempts.setBounds(94, 62, 50, 20);
 		frame.getContentPane().add(txtAttempts);
 		txtAttempts.setColumns(10);
-
+		txtAttempts.setText(Integer.toString(1));
 		/*
 		 * Button stop
 		 */
@@ -202,40 +218,42 @@ public class MainWindow {
 				calcTask.cancel(true);
 			}
 		});
-		btnStop.setBounds(293, 62, 43, 50);
+		btnStop.setBounds(253, 62, 43, 50);
 		try {
 			Image img = ImageIO.read(new File(".\\resources\\Stop.png"))
-					.getScaledInstance(btnStop.getHeight(), btnStop.getWidth(), java.awt.Image.SCALE_SMOOTH);
+					.getScaledInstance(btnStop.getHeight(), btnStop.getWidth(),
+							java.awt.Image.SCALE_SMOOTH);
 			btnStop.setIcon(new ImageIcon(img));
 		} catch (IOException e) {
 		}
 		frame.getContentPane().add(btnStop);
-		
+
 		/*
 		 * Labels
 		 */
-		
-		lblNewLabel = new JLabel("Attempts: ");
-		lblNewLabel.setBounds(10, 61, 63, 23);
-		frame.getContentPane().add(lblNewLabel);
-		
+
+		lblAttempts = new JLabel("Attempts: ");
+		lblAttempts.setBounds(10, 61, 63, 23);
+		frame.getContentPane().add(lblAttempts);
+
 		lblMaxThreds = new JLabel("Max# Threds:");
-		lblMaxThreds.setBounds(10, 83, 77, 23);
+		lblMaxThreds.setBounds(10, 80, 77, 23);
 		frame.getContentPane().add(lblMaxThreds);
-		
+
 		/*
 		 * Text field for the number of threads
 		 */
-		txtThreds = new JTextField();
-		txtThreds.addActionListener(new ActionListener() {
+		txtThreads = new JTextField();
+		txtThreads.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				options.setThreadsCount( Integer.parseInt(txtThreds.getText()));
+				options.setThreadsCount(Integer.parseInt(txtThreads.getText()));
 			}
 		});
-		txtThreds.setColumns(10);
-		txtThreds.setBounds(94, 81, 50, 20);
-		frame.getContentPane().add(txtThreds);
-		
+		txtThreads.setColumns(10);
+		txtThreads.setBounds(94, 81, 50, 20);
+		frame.getContentPane().add(txtThreads);
+		txtThreads.setText(Integer.toString(options.getThreadsCount()));
+
 		/*
 		 * Check box for quiet mode
 		 */
@@ -246,8 +264,56 @@ public class MainWindow {
 			}
 		});
 		chckbxQuiet.setHorizontalAlignment(SwingConstants.LEFT);
-		chckbxQuiet.setBounds(10, 105, 77, 23);
+		chckbxQuiet.setBounds(154, 119, 77, 23);
 		frame.getContentPane().add(chckbxQuiet);
+
+		/*
+		 * Label left columns
+		 */
+		JLabel lblLeftColumns = new JLabel("Left columns:");
+		lblLeftColumns.setBounds(10, 122, 87, 14);
+		frame.getContentPane().add(lblLeftColumns);
+
+		/*
+		 * Label left rows
+		 */
+		JLabel lblLeftRows = new JLabel("Left rows:");
+		lblLeftRows.setBounds(10, 103, 87, 14);
+		frame.getContentPane().add(lblLeftRows);
+
+		/*
+		 * Label right columns
+		 */
+		JLabel lblRightColumns = new JLabel("Right columns:");
+		lblRightColumns.setBounds(10, 141, 77, 14);
+		frame.getContentPane().add(lblRightColumns);
+
+		/*
+		 * Text field for the left rows
+		 */
+		txtLeftRows = new JTextField();
+		txtLeftRows.setColumns(10);
+		txtLeftRows.setBounds(94, 100, 50, 20);
+		frame.getContentPane().add(txtLeftRows);
+		txtLeftRows.setText(Integer.toString(options.getLeftRows()));
+
+		/*
+		 * Text field for the left columns
+		 */
+		txtLeftCols = new JTextField();
+		txtLeftCols.setColumns(10);
+		txtLeftCols.setBounds(94, 119, 50, 20);
+		frame.getContentPane().add(txtLeftCols);
+		txtLeftCols.setText(Integer.toString(options.getLeftColumns()));
+
+		/*
+		 * Text field for the right columns
+		 */
+		txtRightCols = new JTextField();
+		txtRightCols.setColumns(10);
+		txtRightCols.setBounds(94, 138, 50, 20);
+		frame.getContentPane().add(txtRightCols);
+		txtRightCols.setText(Integer.toString(options.getRightColumns()));
 
 	}
 }
