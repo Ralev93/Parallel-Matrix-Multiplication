@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -91,16 +92,22 @@ public class Matrix {
 			IOException {
 		// file = new File(DEFAULT_DIR + path);
 		try (Scanner in = new Scanner( file)) {
-
+			in.useLocale(Locale.US);
 			rows = in.nextInt();// m
 			columns = in.nextInt();// n
 			matrix = new double[rows][columns];
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
+					boolean b = in.hasNextFloat();
 					matrix[i][j] = in.nextDouble();
 				}
 			}
+			
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
 	}
 
@@ -134,7 +141,7 @@ try (DataInputStream in = new DataInputStream(new BufferedInputStream(
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
-					out.write(String.valueOf(matrix[i][j]));
+					out.write(Double.toString(matrix[i][j]));
 					out.write(" ");
 				}
 				out.newLine();
