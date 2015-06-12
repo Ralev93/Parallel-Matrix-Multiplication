@@ -1,19 +1,15 @@
 package bg.uni_sofia.fmi.java.matrix_multiplication;
 
-import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import bg.uni_sofia.fmi.java.matrix_multiplication.GUI.MainWindow;
-import bg.uni_sofia.fmi.java.matrix_multiplication.exceptions.IncorrectMatrixMultiplication;
 import bg.uni_sofia.fmi.java.matrix_multiplication.exceptions.MatrixMultiplicationImpossible;
-import bg.uni_sofia.fmi.java.matrix_multiplication.linear.MatrixMultiplierLinear;
 import bg.uni_sofia.fmi.java.matrix_multiplication.log.Logger;
 import bg.uni_sofia.fmi.java.matrix_multiplication.matrix.Matrix;
 import bg.uni_sofia.fmi.java.matrix_multiplication.parallel.MatrixMultiplierParallel;
@@ -28,7 +24,6 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 
 	private File leftFile; // file, containing the left matrix;
 	private File rightFile; // file, containing the right matrix;
-	private File expectedResultFile; // file, containing the expected result
 	private MainWindow mainWindow; // the graphical interface
 	private Logger logger;
 
@@ -50,28 +45,15 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		this.coresTimes = new float[2 * threads];
 		this.totalIterations = this.attempts + (2 * this.threads)
 				* this.attempts;
+		
+		
 		this.leftFile = options.getLeftInputFile();
 		this.rightFile = options.getRightInputFile();
-	}
-
-	public void setRightFile(File rightFile) {
-		this.rightFile = rightFile;
-	}
-
-	public void setLeftFile(File leftFile) {
-		this.leftFile = leftFile;
-	}
-
-	public void setExpectedResultFile(File expectedResultFile) {
-		this.expectedResultFile = expectedResultFile;
+		logger = new Logger();
 	}
 
 	public void setWindow(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
-	}
-
-	public void setQuiet(boolean quiet) {
-		this.logger.setQuiet(quiet);
 	}
 
 	public int getTotalIterations() {
@@ -153,6 +135,8 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	@Override
 	protected Void doInBackground() throws Exception {
 
+		logger.setQuiet(options.shouldBeQuiet());
+		
 		if (options.shouldUseFile()
 				&& (leftFile == null || rightFile == null ))//|| expectedResultFile == null)) 
 		{
@@ -207,8 +191,7 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 			} else {
 				if (options.shouldShowGUI()) {
 					JFileChooser chooser = mainWindow.getJFileChooser();
-					int rVal = chooser.showSaveDialog(null); // or
-																// mainWindow.frame
+					int rVal = chooser.showSaveDialog(null); 
 					if (rVal == JFileChooser.APPROVE_OPTION) {
 						result.writeToFile(chooser.getSelectedFile());
 					}
@@ -217,9 +200,6 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		} catch (IOException e) {
 			System.out.println("PROBLEM");
 		}
-
-		// btnCalculate.setEnabled(true);
-		// setCursor(null); //turn off the wait cursor
 	}
 
 	public void call() throws Exception {

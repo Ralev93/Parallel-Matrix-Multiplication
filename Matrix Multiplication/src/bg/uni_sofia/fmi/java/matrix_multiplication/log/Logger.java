@@ -6,26 +6,25 @@ public class Logger {
 
 	private boolean quiet = false;
 
-	public Logger(boolean quiet) {
-		this.quiet = quiet;
-	}
-
 	public void log(String msg, boolean hasGUI) {
-		if (!quiet) {
-			if (!hasGUI) {
+
+		if (!hasGUI) {
+			if (!quiet) {
 				System.out.print(msg);
-			} else {
-				/* The only GUI messages in the app are error messages */
-				JOptionPane.showMessageDialog(null, msg, "Error",
-						JOptionPane.ERROR_MESSAGE);
-				//TODO: decide whether to show error msg in quiet mode or no!
 			}
+		} else {
+			/* The only GUI messages in the app are error messages */
+			JOptionPane.showMessageDialog(null, msg, "Error",
+					JOptionPane.ERROR_MESSAGE);
+			// TODO: decide whether to show error msg in quiet mode or no!
 		}
+
 	}
 
 	public void log(String msg) {
 		this.log(msg, false);
 	}
+
 	public void logln(String msg) {
 		this.log(msg + "\n", false);
 	}

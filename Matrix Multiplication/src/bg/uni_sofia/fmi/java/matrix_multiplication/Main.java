@@ -35,7 +35,7 @@ public class Main {
 //			calcTask.setLeftFile(leftFile);
 //			calcTask.setRightFile(rightFile);
 //			calcTask.setExpectedResultFile(resFile);
-			calcTask.setQuiet(options.shouldBeQuiet());
+//			calcTask.setQuiet(options.shouldBeQuiet());
 
 			try {
 				calcTask.call();

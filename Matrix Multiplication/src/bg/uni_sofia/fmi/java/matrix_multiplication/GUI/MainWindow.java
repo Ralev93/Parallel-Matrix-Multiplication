@@ -127,7 +127,7 @@ public class MainWindow {
 		JButton btnLoadSndMatrix = new JButton("Load matrix 2");
 		btnLoadSndMatrix.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				options.setLeftInputFile(getMatrixFile());
+				options.setRightInputFile(getMatrixFile());
 			}
 		});
 		btnLoadSndMatrix.setBounds(154, 28, 142, 23);
@@ -143,7 +143,6 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				calcTask = new CalculationTask(attempts, options);
 				calcTask.setWindow(that);
-				calcTask.setExpectedResultFile(resFile);//TODO:delete
 				options.setQuiet(quiet);
 				calcTask.addPropertyChangeListener(new PropertyChangeListener() {
 					public void propertyChange(PropertyChangeEvent evt) {
