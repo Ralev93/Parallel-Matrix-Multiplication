@@ -96,6 +96,10 @@ public class Options {
 		return quiet;
 	}
 
+	public void setQuiet(boolean quiet) {
+		this.quiet =  quiet;
+	}
+	
 	public boolean shouldShowGUI() {
 		return showGUI;
 	}

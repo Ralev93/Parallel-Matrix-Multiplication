@@ -170,7 +170,8 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 
 		if (!options.shouldUseFile() && !options.shouldShowGUI()) {
 			left = new Matrix(options.getLeftRows(), options.getLeftColumns());
-			right = new Matrix(options.getRightRows(), options.getRightColumns());
+			right = new Matrix(options.getRightRows(),
+					options.getRightColumns());
 
 			left.generateRandom();
 			right.generateRandom();
@@ -181,7 +182,8 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 
 		setProgress(0);
 		invokeLinearMultiply(left, right, new MatrixMultiplierParallel());
-		result = invokeParallelMultiply(left, right, new MatrixMultiplierParallel());
+		result = invokeParallelMultiply(left, right,
+				new MatrixMultiplierParallel());
 
 		if (this.isCancelled()) {
 			logger.logln("Calcuation aborted!");
@@ -198,17 +200,18 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	@Override
 	public void done() {
 		showTable();
-		
+
 		try {
 			if (options.getOutputFile() != null) {
 				result.writeToFile(options.getOutputFile());
 			} else {
-				JFileChooser chooser = mainWindow.getJFileChooser();
-				int rVal = chooser.showSaveDialog(null); // or mainWindow.frame
-				if (rVal == JFileChooser.APPROVE_OPTION) {
-					System.out.println("Ei tuka: "
-							+ chooser.getSelectedFile().getAbsolutePath());
-					result.writeToFile(chooser.getSelectedFile());
+				if (options.shouldShowGUI()) {
+					JFileChooser chooser = mainWindow.getJFileChooser();
+					int rVal = chooser.showSaveDialog(null); // or
+																// mainWindow.frame
+					if (rVal == JFileChooser.APPROVE_OPTION) {
+						result.writeToFile(chooser.getSelectedFile());
+					}
 				}
 			}
 		} catch (IOException e) {
