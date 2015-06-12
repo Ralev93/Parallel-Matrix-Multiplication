@@ -14,6 +14,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import javax.swing.JFileChooser;
 
@@ -37,7 +38,7 @@ public class MainWindow {
 	private JTextField txtAttempts;
 	private JButton btnStop;
 	private JLabel lblAttempts;
-	private JLabel lblMaxThreds;
+	private JLabel lblMaxThreads;
 	private JTextField txtThreads;
 
 	private CalculationTask calcTask;
@@ -180,7 +181,7 @@ public class MainWindow {
 		});
 		btnAbout.setBounds(277, 123, 20, 23);
 		try {
-			Image img = ImageIO.read(new File(".\\resources\\Help.png"))
+			Image img = ImageIO.read(new File(URI.create(".\\resources\\Help.png")))
 					.getScaledInstance(btnAbout.getHeight(),
 							btnAbout.getWidth(), java.awt.Image.SCALE_SMOOTH);
 			btnAbout.setIcon(new ImageIcon(img));
@@ -213,7 +214,7 @@ public class MainWindow {
 		});
 		btnStop.setBounds(253, 62, 43, 50);
 		try {
-			Image img = ImageIO.read(new File(".\\resources\\Stop.png"))
+			Image img = ImageIO.read(new File(URI.create(".\\resources\\Stop.png")))
 					.getScaledInstance(btnStop.getHeight(), btnStop.getWidth(),
 							java.awt.Image.SCALE_SMOOTH);
 			btnStop.setIcon(new ImageIcon(img));
@@ -229,9 +230,9 @@ public class MainWindow {
 		lblAttempts.setBounds(10, 61, 63, 23);
 		frame.getContentPane().add(lblAttempts);
 
-		lblMaxThreds = new JLabel("Max# Threds:");
-		lblMaxThreds.setBounds(10, 80, 77, 23);
-		frame.getContentPane().add(lblMaxThreds);
+		lblMaxThreads = new JLabel("Max# Threads:");
+		lblMaxThreads.setBounds(10, 80, 77, 23);
+		frame.getContentPane().add(lblMaxThreads);
 
 		/*
 		 * Text field for the number of threads
@@ -270,6 +271,7 @@ public class MainWindow {
 		JLabel lblLeftColumns = new JLabel("Left columns:");
 		lblLeftColumns.setBounds(10, 122, 87, 14);
 		frame.getContentPane().add(lblLeftColumns);
+		
 
 		/*
 		 * Label left rows
@@ -292,6 +294,11 @@ public class MainWindow {
 		txtLeftRows.setColumns(10);
 		txtLeftRows.setBounds(94, 100, 50, 20);
 		frame.getContentPane().add(txtLeftRows);
+		txtLeftRows.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				options.setLeftRows(Integer.parseInt(txtLeftRows.getText()));
+			}
+		});
 		txtLeftRows.setText(Integer.toString(options.getLeftRows()));
 
 		/*
@@ -301,6 +308,11 @@ public class MainWindow {
 		txtLeftCols.setColumns(10);
 		txtLeftCols.setBounds(94, 119, 50, 20);
 		frame.getContentPane().add(txtLeftCols);
+		txtLeftCols.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				options.setLeftColumns(Integer.parseInt(txtLeftCols.getText()));
+			}
+		});
 		txtLeftCols.setText(Integer.toString(options.getLeftColumns()));
 
 		/*
@@ -310,6 +322,11 @@ public class MainWindow {
 		txtRightCols.setColumns(10);
 		txtRightCols.setBounds(94, 138, 50, 20);
 		frame.getContentPane().add(txtRightCols);
+		txtRightCols.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				options.setRightColumns(Integer.parseInt(txtRightCols.getText()));
+			}
+		});
 		txtRightCols.setText(Integer.toString(options.getRightColumns()));
 
 	}
