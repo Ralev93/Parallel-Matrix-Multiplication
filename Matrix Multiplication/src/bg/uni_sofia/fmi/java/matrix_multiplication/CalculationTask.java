@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
@@ -31,7 +30,7 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	private File rightFile; // file, containing the right matrix;
 	private File expectedResultFile; // file, containing the expected result
 	private MainWindow mainWindow; // the graphical interface
-	private Logger logger = new Logger(false);
+	private Logger logger;
 
 	private Options options;
 	private Matrix result;

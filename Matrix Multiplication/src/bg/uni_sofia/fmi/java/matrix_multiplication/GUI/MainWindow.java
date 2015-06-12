@@ -42,8 +42,8 @@ public class MainWindow {
 
 	private CalculationTask calcTask;
 	private final File DEFAULT_DIR = new File(".\\TestData\\ex1");//TODO: UNIX?
-	private File leftFile = new File(".\\TestData\\ex1\\left.txt");
-	private File rightFile = new File(".\\TestData\\ex1\\right.txt");
+	//private File leftFile = new File(".\\TestData\\ex1\\left.txt");
+	//private File rightFile = new File(".\\TestData\\ex1\\right.txt");
 	private File resFile = new File(".\\TestData\\ex1\\result.txt");
 	private int attempts = 3;
 	private boolean quiet = false;
@@ -115,7 +115,7 @@ public class MainWindow {
 		JButton btnLoadFrstMatrix = new JButton("Load matrix 1");
 		btnLoadFrstMatrix.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				leftFile = getMatrixFile();
+				options.setLeftInputFile(getMatrixFile());
 			}
 		});
 		btnLoadFrstMatrix.setBounds(10, 28, 134, 23);
@@ -127,7 +127,7 @@ public class MainWindow {
 		JButton btnLoadSndMatrix = new JButton("Load matrix 2");
 		btnLoadSndMatrix.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				rightFile = getMatrixFile();
+				options.setLeftInputFile(getMatrixFile());
 			}
 		});
 		btnLoadSndMatrix.setBounds(154, 28, 142, 23);
@@ -143,10 +143,8 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent arg0) {
 				calcTask = new CalculationTask(attempts, options);
 				calcTask.setWindow(that);
-				calcTask.setLeftFile(leftFile); // TODO: getFrom options
-				calcTask.setRightFile(rightFile);
-				calcTask.setExpectedResultFile(resFile);
-				calcTask.setQuiet(quiet);
+				calcTask.setExpectedResultFile(resFile);//TODO:delete
+				options.setQuiet(quiet);
 				calcTask.addPropertyChangeListener(new PropertyChangeListener() {
 					public void propertyChange(PropertyChangeEvent evt) {
 						if ("progress" == evt.getPropertyName()) {
@@ -262,6 +260,10 @@ public class MainWindow {
 		chckbxQuiet.setHorizontalAlignment(SwingConstants.LEFT);
 		chckbxQuiet.setBounds(154, 119, 77, 23);
 		frame.getContentPane().add(chckbxQuiet);
+		if (options.shouldBeQuiet()) {
+			quiet = true;
+			chckbxQuiet.setSelected(true);
+		}
 
 		/*
 		 * Label left columns
