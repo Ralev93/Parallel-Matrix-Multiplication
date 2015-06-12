@@ -107,7 +107,7 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 			avrglinearTime = linearTime / (float) attempts;
 			logger.logln("Linear multiplying finished for: " + avrglinearTime);
 		} catch (MatrixMultiplicationImpossible ex) {
-			logger.log(MULTIPLICATION_IMP_ERROR_MSG, options.shouldBeQuiet());
+			logger.log(MULTIPLICATION_IMP_ERROR_MSG, options.shouldShowGUI());
 			System.exit(1);
 		}
 		return result;

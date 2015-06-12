@@ -27,9 +27,9 @@ public class Options {
 	
 	public Options(String[] options) throws InvalidOptionException {
 		
-		m=100;
-		n=100;
-		k=100;
+		m=0;
+		n=0;
+		k=0;
 		useFile = true;
 		threads = Runtime.getRuntime().availableProcessors();
 		quiet = false;
@@ -77,8 +77,11 @@ public class Options {
 			}
 		}
 			
-			//if(useFile && input == null)
-			//	throw new InvalidOptionException("Incorrect input file path.");
+		if(showGUI)
+			useFile = true;
+		
+		if (!showGUI && useFile && input == null)
+			throw new InvalidOptionException("Incorrect input file path.");
 			
 			if(!showGUI && !useFile && (m <= 0 || n <= 0 || k <= 0))
 				throw new InvalidOptionException("Incorrect dimensions of the matrices to multiply.");
@@ -96,9 +99,19 @@ public class Options {
 		return showGUI;
 	}
 	
+	public void setLeftRows(int m)
+	{
+		this.m = m;
+	}
+	
 	public int getLeftRows()
 	{
 		return m;
+	}
+	
+	public void setLeftColumns(int n)
+	{
+		this.n = n;
 	}
 	
 	public int getLeftColumns()
@@ -106,9 +119,19 @@ public class Options {
 		return n;
 	}
 	
+	public void setRightRows(int n)
+	{
+		this.n = n;
+	}
+	
 	public int getRightRows()
 	{
 		return n;
+	}
+	
+	public void setRightColumns(int k)
+	{
+		this.k = k;
 	}
 	
 	public int getRightColumns()
