@@ -20,6 +20,7 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	private int totalIterations;
 	private float avrglinearTime = 0;
 	private float[] coresTimes;
+	private float[] coresEffectivity;
 	private int progress = 0;
 
 	private File leftFile; // file, containing the left matrix;
@@ -42,11 +43,10 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		this.threads = options.getThreadsCount();
 		this.options = options;
 		this.attempts = attempts;
-		this.coresTimes = new float[2 * threads];
-		this.totalIterations = this.attempts + (2 * this.threads)
-				* this.attempts;
-		
-		
+		this.coresTimes = new float[threads];
+		this.coresEffectivity = new float[threads];
+		this.totalIterations = this.attempts + (this.threads) * this.attempts;
+
 		this.leftFile = options.getLeftInputFile();
 		this.rightFile = options.getRightInputFile();
 		logger = new Logger();
@@ -65,11 +65,12 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	}
 
 	private void showTable() {
-		logger.log(String.format("\n\n%-10s %-10s %-10s\n", "Threads",
-				"Acceleration", "ms"));
-		for (int i = 1; i <= 2 * threads; i++) {
-			logger.log(String.format("#%-10d%-10.4f %.1fms\n", i,
-					coresTimes[i - 1], avrglinearTime / coresTimes[i - 1]));
+		logger.log(String.format("\n\n%-10s %-10s %-10s %-10s\n", "Threads",
+				"Acceleration", "Effectivity", "ms"));
+		for (int i = 1; i <= threads; i++) {
+			logger.log(String.format("#%-10d%-10.4f   %-10.4f %.1fms\n", i,
+					coresTimes[i - 1], coresEffectivity[i - 1], avrglinearTime
+							/ coresTimes[i - 1]));
 		}
 		logger.logln("Average linear time: " + avrglinearTime + "ms");
 	}
@@ -102,28 +103,27 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	}
 
 	private Matrix invokeParallelMultiply(Matrix left, Matrix right,
-			MatrixMultiplierParallel parallel) {
+			MatrixMultiplierParallel parallel, int threads) {
 
 		Matrix result = new Matrix();
 
-		logger.logln("Parallel multiplying started");
 		try {
-			for (int i = 1; i <= 2 * threads && !this.isCancelled(); i++) {
-				long parallelTime = 0;
-				for (int j = 0; j < attempts && !this.isCancelled(); j++) {
-					parallel.setParallelismLevel(i); // # threads
+			// for (int i = 1; i <= 2 * threads && !this.isCancelled(); i++) {
+			long parallelTime = 0;
+			for (int j = 0; j < attempts && !this.isCancelled(); j++) {
+				parallel.setParallelismLevel(threads); // # threads
 
-					long startParallel = System.currentTimeMillis();
-					result = parallel.multiply(left, right);
-					long endParallel = System.currentTimeMillis();
-					parallelTime += endParallel - startParallel;
+				long startParallel = System.currentTimeMillis();
+				result = parallel.multiply(left, right);
+				long endParallel = System.currentTimeMillis();
+				parallelTime += endParallel - startParallel;
 
-					setProgress(++progress);
-				}
-				float avrgParallelTime = parallelTime / attempts;
-				coresTimes[i - 1] = avrglinearTime / avrgParallelTime;
+				setProgress(++progress);
 			}
-			logger.logln("Parallel multiplying finished.");
+			float avrgParallelTime = parallelTime / attempts;
+			coresTimes[threads - 1] = (avrglinearTime / avrgParallelTime);
+			coresEffectivity[threads - 1] = (avrglinearTime / avrgParallelTime)
+					/ threads;
 
 		} catch (MatrixMultiplicationImpossible ex) {
 			logger.log(MULTIPLICATION_IMP_ERROR_MSG, options.shouldShowGUI());
@@ -136,12 +136,14 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	protected Void doInBackground() throws Exception {
 
 		logger.setQuiet(options.shouldBeQuiet());
-		
-		if (options.shouldUseFile()
-				&& (leftFile == null || rightFile == null ))//|| expectedResultFile == null)) 
+
+		if (options.shouldUseFile() && (leftFile == null || rightFile == null))// ||
+																				// expectedResultFile
+																				// ==
+																				// null))
 		{
 			logger.log(FILE_ERROR_MSG, options.shouldShowGUI());
-			/* close the window */// TODO: Nullpointer exception if no gui!!!
+			/* close the window */
 			if (options.shouldShowGUI())
 				mainWindow.getJFrame().dispatchEvent(
 						new WindowEvent(mainWindow.getJFrame(),
@@ -165,9 +167,17 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 		}
 
 		setProgress(0);
-		invokeLinearMultiply(left, right, new MatrixMultiplierParallel());
-		result = invokeParallelMultiply(left, right,
+		result = invokeLinearMultiply(left, right,
 				new MatrixMultiplierParallel());
+
+		logger.logln("Parallel multiplying started");
+
+		for (int i = 1; i <= threads && !this.isCancelled(); i++) {
+			invokeParallelMultiply(left, right, new MatrixMultiplierParallel(),
+					i);
+		}
+
+		logger.logln("Parallel multiplying finished.");
 
 		if (this.isCancelled()) {
 			logger.logln("Calcuation aborted!");
@@ -191,7 +201,7 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 			} else {
 				if (options.shouldShowGUI()) {
 					JFileChooser chooser = mainWindow.getJFileChooser();
-					int rVal = chooser.showSaveDialog(null); 
+					int rVal = chooser.showSaveDialog(null);
 					if (rVal == JFileChooser.APPROVE_OPTION) {
 						result.writeToFile(chooser.getSelectedFile());
 					}

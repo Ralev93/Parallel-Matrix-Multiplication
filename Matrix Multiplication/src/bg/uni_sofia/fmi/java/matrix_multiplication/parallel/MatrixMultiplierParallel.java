@@ -104,35 +104,15 @@ public class MatrixMultiplierParallel implements MatrixMultiplier {
 
 		Matrix result = new Matrix(left.getRows(), right.getColumns());
 
-		// ComputeThread threads[] = new ComputeThread[left.getRows()];
 		for (int k = 0; k < left.getRows(); k++) {
 			executor.execute(new ComputeThread(k, left, right, result));
 
 		}
-		//
-		// for (int k = 0; k < left.getRows(); k++)
-		// try {
-		// threads[k].join();
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
-		// try {
-		// for (int k = 0; k < left.getRows(); k++) {
-		// pool.invoke(new RowMultiplicationTask(k, left, right, result));
-		// }
-		//
-		// return result;
-		// } finally {
-		// pool.shutdown();
-		// }
 
 		executor.shutdown();
 		try {
 			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
@@ -158,7 +138,6 @@ public class MatrixMultiplierParallel implements MatrixMultiplier {
 		 try {
 		 threads[k].wait(Long.MAX_VALUE);
 		 } catch (InterruptedException e) {
-		 // TODO Auto-generated catch block
 		 e.printStackTrace();
 		 }
 		 

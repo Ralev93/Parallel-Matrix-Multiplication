@@ -31,24 +31,15 @@ public class Main {
         else
         {
         	CalculationTask calcTask = new CalculationTask(attempts, options);
-//			calcTask.setFrame(frame);
-//			calcTask.setLeftFile(leftFile);
-//			calcTask.setRightFile(rightFile);
-//			calcTask.setExpectedResultFile(resFile);
+
 //			calcTask.setQuiet(options.shouldBeQuiet());
 
 			try {
 				calcTask.call();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			try {
-//				calcTask.wait();
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+
         }
     }
 
