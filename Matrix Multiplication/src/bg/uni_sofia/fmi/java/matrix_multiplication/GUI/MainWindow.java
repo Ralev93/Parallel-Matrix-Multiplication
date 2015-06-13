@@ -1,10 +1,6 @@
 package bg.uni_sofia.fmi.java.matrix_multiplication.GUI;
 
 import java.awt.EventQueue;
-import java.awt.Image;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 
@@ -13,8 +9,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 
 import javax.swing.JFileChooser;
 
@@ -45,7 +39,7 @@ public class MainWindow {
 	private final File DEFAULT_DIR = new File(".\\TestData\\ex1");//TODO: UNIX?
 	//private File leftFile = new File(".\\TestData\\ex1\\left.txt");
 	//private File rightFile = new File(".\\TestData\\ex1\\right.txt");
-	private File resFile = new File(".\\TestData\\ex1\\result.txt");
+	//private File resFile = new File(".\\TestData\\ex1\\result.txt");
 	private int attempts = 3;
 	private boolean quiet = false;
 

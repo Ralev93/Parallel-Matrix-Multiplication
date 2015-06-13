@@ -1,21 +1,17 @@
 package bg.uni_sofia.fmi.java.matrix_multiplication.GUI;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTable;
-import javax.swing.JEditorPane;
-import javax.swing.JTextPane;
 import javax.swing.JTextArea;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+
 import java.awt.Font;
-import java.awt.Color;
+
 import javax.swing.UIManager;
 
+@SuppressWarnings("serial")
 public class About extends JFrame {
 
 	private JPanel contentPane;

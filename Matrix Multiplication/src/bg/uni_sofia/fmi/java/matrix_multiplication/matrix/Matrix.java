@@ -99,7 +99,6 @@ public class Matrix {
 
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < columns; j++) {
-					boolean b = in.hasNextFloat();
 					matrix[i][j] = in.nextDouble();
 				}
 			}

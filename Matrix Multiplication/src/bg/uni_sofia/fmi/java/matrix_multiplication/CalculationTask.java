@@ -32,7 +32,7 @@ public class CalculationTask extends SwingWorker<Void, Void> {
 	private Matrix result;
 
 	/* message, shown when the calculation is incorrect */
-	private final static String MULTIPLICATION_INC_ERROR_MSG = "Wrong matrix multiplication!";
+	//private final static String MULTIPLICATION_INC_ERROR_MSG = "Wrong matrix multiplication!";
 	/* Message, shown when multiplication is impossible */
 	private final static String MULTIPLICATION_IMP_ERROR_MSG = "The columns of the first matrix must"
 			+ " be equal of the rows of the second!\nTerminating.";

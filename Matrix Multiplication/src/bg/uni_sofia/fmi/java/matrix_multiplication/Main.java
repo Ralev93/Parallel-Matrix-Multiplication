@@ -1,14 +1,8 @@
 package bg.uni_sofia.fmi.java.matrix_multiplication;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import bg.uni_sofia.fmi.java.matrix_multiplication.GUI.MainWindow;
 import bg.uni_sofia.fmi.java.matrix_multiplication.exceptions.InvalidOptionException;
-import bg.uni_sofia.fmi.java.matrix_multiplication.matrix.Matrix;
 
 public class Main {
 
